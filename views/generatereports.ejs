@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Reports</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    .hero {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .center-div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    /* Improved Button Style */
+    .btn-improved {
+      background: linear-gradient(to right, #28a745, #218838);
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 50px;
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-improved:hover {
+      background: linear-gradient(to right, #218838, #28a745);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-improved:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.5);
+    }
+
+    .btn-warning-improved {
+      background: linear-gradient(to right, #ffc107, #e0a800);
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 12px 25px;
+      font-size: 12px;
+      border-radius: 50px;
+      box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-warning-improved:hover {
+      background: linear-gradient(to right, #e0a800, #ffc107);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-danger-improved {
+      background: linear-gradient(to right, #dc3545, #c82333);
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 12px 25px;
+      font-size: 12px;
+      border-radius: 50px;
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-danger-improved:hover {
+      background: linear-gradient(to right, #c82333, #dc3545);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-danger-improved:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
+          <div class="collapse navbar-collapse">
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/generatereports">Generate Reports</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/donationhistory">Donation History</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+  <div class="container mt-5">
+    <!-- Hero Section with Explanation -->
+    <div class="hero">
+      <h1>Generate Reports</h1>
+      <p>This page allows you to generate detailed PDF reports. Use the button below to generate a PDF of all donations formatted as a table, or enter a donor’s name to generate a summary report.</p>
+    </div>
+
+    <div class="row mb-4">
+      <!-- Form: Generate Donor Summary PDF -->
+      <div class="col-md-6 mx-auto"> <!-- This makes the form div centered -->
+        <div class="card">
+          <div class="card-header">
+            Generate Donor Summary
+          </div>
+          <div class="card-body">
+            <form action="/generate-summary" method="get">
+              <div class="mb-3">
+                <label for="nombreDonante" class="form-label">Donor Name:</label>
+                <input type="text" class="form-control" id="nombreDonante" name="nombreDonante" placeholder="Enter donor name" required>
+              </div>
+              <button type="submit" class="btn btn-improved w-100">Generate Declaration Letter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donation List Table -->
+    <h2 class="mb-3">Donation List</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+          <thead class="table-dark">
+              <tr>
+                  <th>Donor Name</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Donation Date</th>
+                  <th>Actions</th> <!-- New column for actions -->
+              </tr>
+          </thead>
+          <tbody>
+              <% donaciones.forEach(donation => { %>
+              <tr>
+                  <td><%= donation.NombrePersona %></td>
+                  <td><%= donation.Descripcion %></td>
+                  <td>$<%= donation.Monto.toFixed(2) %></td>
+                  <td><%= new Date(donation.FechaDonacion).toLocaleDateString() %></td>
+                  <td>
+                      <!-- Button to edit the donation's declaration letter -->
+                      <a href="/edit-declaration/<%= donation.NombrePersona %>" class="btn btn-warning-improved btn-sm">Edit Donation</a>
+                       <!-- Button to delete the donation -->
+                       <a href="/delete-donation/<%= donation.NombrePersona %>" class="btn btn-danger-improved btn-sm" onclick="return confirm('Are you sure you want to delete this donation?')">Delete Donation</a>
+                  </td>
+              </tr>
+              <% }); %>
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+   <!-- Footer -->
+   <footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+      <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
