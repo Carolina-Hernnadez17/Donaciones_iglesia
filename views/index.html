@@ -13,67 +13,55 @@
       margin-bottom: 2rem;
       text-align: center;
     }
-
-    /* Form container with smaller width */
     .form-container {
       max-width: 600px;
       margin: 0 auto;
     }
-
-    /* Custom button styles */
     .btn-custom {
       background-color: #28a745;
       color: white;
       border: 2px solid #28a745;
-      border-radius: 30px; /* Slightly rounded corners */
-      padding: 10px 20px; /* Adjust padding for button */
-      font-size: 1rem; /* Slightly larger text */
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 1rem;
       text-transform: uppercase;
       font-weight: bold;
       transition: all 0.3s ease-in-out;
       display: inline-block;
     }
-
     .btn-custom:hover {
       background-color: #218838;
-      color: white;
       border-color: #218838;
-      transform: translateY(-3px); /* Slight hover effect */
+      transform: translateY(-3px);
     }
-
-    .btn-custom:focus {
-      outline: none;
-    }
-
+    .btn-custom:focus { outline: none; }
     .btn-custom:active {
       background-color: #1e7e34;
       border-color: #1c7430;
-      transform: translateY(1px); /* Slightly push the button down when clicked */
+      transform: translateY(1px);
     }
-
     .btn-custom:disabled {
       background-color: #c3e6cb;
       border-color: #c3e6cb;
       color: #6c757d;
     }
-
   </style>
 </head>
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/generatereports">Generate Reports</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/donationhistory">Donation History</a>
-                </li>
-            </ul>
-        </div>
+      <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/generatereports">Generate Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/donationhistory">Donation History</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -112,10 +100,10 @@
       </div>
     </div>
 
-    <!-- Donation List -->
+    <!-- Donation List Table -->
     <h2 class="mb-3">Donation List</h2>
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-bordered">
         <thead class="table-dark">
           <tr>
             <th>Name</th>
@@ -124,30 +112,39 @@
             <th>Donation Date</th>
           </tr>
         </thead>
-        <tbody>
-          <% donaciones.forEach(donation => { %>
-            <tr>
-              <td><%= donation.NombrePersona %></td>
-              <td><%= donation.Descripcion %></td>
-              <td>$<%= donation.Monto.toFixed(2) %></td>
-              <td><%= new Date(donation.FechaDonacion).toLocaleDateString() %></td>
-            </tr>
-          <% }); %>
+        <tbody id="donationTableBody">
+          <!-- Las filas se cargarán dinámicamente -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
+  <!-- Script para cargar datos dinámicamente -->
+  <script>
+    fetch('/api/donaciones')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('donationTableBody');
+        data.forEach(donation => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${donation.NombrePersona}</td>
+            <td>${donation.Descripcion}</td>
+            <td>$${donation.Monto.toFixed(2)}</td>
+            <td>${new Date(donation.FechaDonacion).toLocaleDateString()}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error:', error));
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-
-  <!-- Footer -->
   <footer class="bg-dark text-white mt-5 py-4">
     <div class="container text-center">
       <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>
     </div>
   </footer>
-
 </body>
 </html>

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const PDFDocument = require('pdfkit');
 
 dotenv.config();
@@ -20,14 +21,62 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
-app.use(express.static('public'));
+
+// Se sirven archivos estáticos desde la carpeta 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Importar el modelo Donation
 const Donation = require('./models/Donation');
 
-// Route: Generate PDF of all donations (formatted as a table)
+// Rutas para servir las vistas HTML
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+app.get('/donationhistory', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'donationhistory.html'));
+});
+
+app.get('/generatereports', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'generatereports.html'));
+});
+
+app.get('/edit-declaration/:donorName', (req, res) => {
+  // Ahora se envía el archivo HTML de edición, y la carga dinámica de datos deberá hacerse vía JavaScript en el cliente
+  res.sendFile(path.join(__dirname, 'views', 'editdeclaration.html'));
+});
+
+app.get('/api/donor/:donorName', async (req, res) => {
+  const donorName = req.params.donorName;
+  try {
+    const donor = await Donation.findOne({ NombrePersona: donorName });
+    if (!donor) {
+      return res.status(404).json({ error: 'Donor not found' });
+    }
+    const totalDonations = await Donation.aggregate([
+      { $match: { NombrePersona: donorName } },
+      { $group: { _id: "$NombrePersona", total: { $sum: "$Monto" } } }
+    ]);
+    res.json({ donor, total: totalDonations.length > 0 ? totalDonations[0].total : 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.get('/api/donaciones', async (req, res) => {
+  try {
+    const donations = await Donation.find().sort({ NombrePersona: 1 });
+    res.json(donations);
+  } catch (error) {
+    console.error("Error fetching donations:", error);
+    res.status(500).json({ error: 'Failed to fetch donations' });
+  }
+});
+
+
+// Ruta: Generar PDF de todas las donaciones (tabla)
 app.get('/generate-pdf', async (req, res) => {
   const donations = await Donation.find().sort({ NombrePersona: 1 });
 
@@ -35,36 +84,30 @@ app.get('/generate-pdf', async (req, res) => {
     return res.status(404).send('No donations to display');
   }
 
-  // Create a new PDF document with margins and landscape layout
   const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename="Donations_List.pdf"');
 
   doc.pipe(res);
 
-  // Title
   doc.fontSize(18).text('Donations List', { align: 'center' });
   doc.moveDown();
 
-  // Table Header positions
   const tableTop = 100;
-  const col1X = 50;  // Donor Name
-  const col2X = 200; // Description
-  const col3X = 450; // Amount
-  const col4X = 550; // Donation Date
+  const col1X = 50;
+  const col2X = 200;
+  const col3X = 450;
+  const col4X = 550;
 
-  // Draw table header
   doc.fontSize(12).text('Donor Name', col1X, tableTop);
   doc.text('Description', col2X, tableTop);
   doc.text('Amount', col3X, tableTop, { width: 80, align: 'right' });
   doc.text('Donation Date', col4X, tableTop, { width: 80, align: 'right' });
 
-  // Draw a horizontal line below the header
   doc.moveTo(col1X, tableTop + 15)
      .lineTo(750, tableTop + 15)
      .stroke();
 
-  // Draw each donation row
   let rowY = tableTop + 25;
   donations.forEach(donation => {
     doc.fontSize(10).text(donation.NombrePersona, col1X, rowY);
@@ -72,7 +115,6 @@ app.get('/generate-pdf', async (req, res) => {
     doc.text(`$${donation.Monto.toFixed(2)}`, col3X, rowY, { width: 80, align: 'right' });
     doc.text(new Date(donation.FechaDonacion).toLocaleDateString(), col4X, rowY, { width: 80, align: 'right' });
     rowY += 20;
-    // Add a new page if necessary
     if (rowY > doc.page.height - 50) {
       doc.addPage({ margin: 30, size: 'A4', layout: 'landscape' });
       rowY = 50;
@@ -82,7 +124,7 @@ app.get('/generate-pdf', async (req, res) => {
   doc.end();
 });
 
-// Route: Generate summary PDF by donor name (search by name)
+// Ruta: Generar PDF resumen por nombre de donante
 app.get('/generate-summary', async (req, res) => {
   const donorName = req.query.nombreDonante;
 
@@ -90,7 +132,6 @@ app.get('/generate-summary', async (req, res) => {
     return res.status(400).send('Donor name is required');
   }
 
-  // Find first donation matching the donor name
   const donor = await Donation.findOne({ NombrePersona: donorName });
 
   if (!donor) {
@@ -122,39 +163,10 @@ app.get('/generate-summary', async (req, res) => {
   doc.end();
 });
 
-// Ruta para mostrar el formulario de edición de la carta
-app.get('/edit-declaration/:donorName', async (req, res) => {
-  const donorName = req.params.donorName;
-
-  if (!donorName) {
-    return res.status(400).send('Donor name is required');
-  }
-
-  // Buscar la donación del donante
-  const donor = await Donation.findOne({ NombrePersona: donorName });
-
-  if (!donor) {
-    return res.status(404).send('Donor not found');
-  }
-
-  // Buscar el total de las donaciones del donante
-  const totalDonations = await Donation.aggregate([
-    { $match: { NombrePersona: donor.NombrePersona } },
-    { $group: { _id: "$NombrePersona", total: { $sum: "$Monto" } } }
-  ]);
-
-  // Renderizar la vista con los datos del donante
-  res.render('editdeclaration', {
-    donor: donor,
-    total: totalDonations[0].total.toFixed(2)
-  });
-});
-
-// Ruta para generar el PDF después de la edición
+// Ruta: Generar PDF de la declaración (después de la edición)
 app.post('/generate-declaration-pdf', async (req, res) => {
   const { NombrePersona, fecha, descripcion, monto, total } = req.body;
 
-  // Crear el PDF con los datos editados
   const doc = new PDFDocument({ size: 'letter' });
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename="Donor_Summary.pdf"');
@@ -177,59 +189,15 @@ app.post('/generate-declaration-pdf', async (req, res) => {
   doc.end();
 });
 
-// Ruta para generar el PDF de la carta de donación
-app.post('/generate-declaration-pdf', async (req, res) => {
-  const { NombrePersona, fecha, descripcion, monto } = req.body;
-
-  // Lógica para generar el PDF con los datos proporcionados
-  try {
-    const pdfBuffer = await generateDeclarationPDF(NombrePersona, fecha, descripcion, monto);
-    res.contentType("application/pdf");
-    res.send(pdfBuffer);
-  } catch (error) {
-    res.status(500).send('Error generating PDF');
-  }
-});
-
-// Función para generar el PDF (reemplaza esto con tu propia lógica)
-async function generateDeclarationPDF(NombrePersona, fecha, descripcion, monto) {
-  const { jsPDF } = require("jspdf");
-
-  const doc = new jsPDF();
-
-  doc.text(`Donation Declaration for ${NombrePersona}`, 10, 10);
-  doc.text(`Date: ${fecha}`, 10, 20);
-  doc.text(`Description: ${descripcion}`, 10, 30);
-  doc.text(`Amount Donated: $${monto}`, 10, 40);
-
-  return doc.output('arraybuffer');
-}
-
-// Route: Render Reports view
-app.get('/generatereports', async (req, res) => {
-  const donations = await Donation.find().sort({ NombrePersona: 1 });
-  res.render('generatereports', { donaciones: donations });
-});
-
-// Route: Render Donation History view
-app.get('/donationhistory', async (req, res) => {
-  const donations = await Donation.find().sort({ NombrePersona: 1 });
-  res.render('donationhistory', { donaciones: donations });
-});
-
-// Route: Add donation (form submission)
+// Ruta: Agregar donación (envío del formulario)
 app.post('/donations', async (req, res) => {
   const { NombrePersona, Descripcion, Monto, FechaDonacion } = req.body;
-
-  // Convertir la fecha ingresada a un objeto Date
   const fechaIngresada = new Date(FechaDonacion);
 
-  // Verificar si la fecha ingresada es válida
   if (isNaN(fechaIngresada)) {
     return res.status(400).send("Fecha de donación no válida.");
   }
 
-  // Crear una nueva donación con la fecha ingresada
   const donation = new Donation({ 
     NombrePersona, 
     Descripcion, 
@@ -237,17 +205,8 @@ app.post('/donations', async (req, res) => {
     FechaDonacion: fechaIngresada 
   });
 
-  // Guardar la donación en la base de datos
   await donation.save();
-  
-  // Redirigir a la página de inicio o historial de donaciones
-  res.redirect('/donationhistory');
-});
-
-// Route: Main page (Donation Registration)
-app.get('/', async (req, res) => {
-  const donations = await Donation.find().sort({ NombrePersona: 1 });
-  res.render('index', { donaciones: donations });
+  res.redirect('/');
 });
 
 app.listen(PORT, () => {
