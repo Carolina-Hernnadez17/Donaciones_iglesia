@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "npm run build"
+    "build": "node --max-old-space-size=4096 node_modules/.bin/webpack --config webpack.config.js"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
