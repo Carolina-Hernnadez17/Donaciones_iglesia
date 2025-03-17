@@ -1,3 +1,8 @@
 [build]
   command = "mkdir -p temp_public && cp -r !(public) 
   temp_public && mv temp_public public"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
