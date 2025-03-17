@@ -1,3 +1,2 @@
 [build]
-  command = "npm run build"     
-  publish = "public"             
+  command = "mkdir -p public && cp -r * public"        
