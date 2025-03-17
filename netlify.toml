@@ -1,2 +1,3 @@
 [build]
   command = "mkdir -p public && cp -r * public"        
+  publish = "new_folder"
