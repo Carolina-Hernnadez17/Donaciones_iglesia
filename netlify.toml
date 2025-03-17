@@ -1,8 +1,11 @@
 [build]
-  command = "mkdir -p temp_public && cp -r !(public) 
-  temp_public && mv temp_public public"
+command = "npm run build"
+publish = "dist"
+
+[build.environment]
+NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/old-path"
+to = "/new-path"
+status = 301
