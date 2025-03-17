@@ -65,6 +65,43 @@ app.get('/api/donor/:donorName', async (req, res) => {
 });
 
 
+// Ruta para eliminar una donación
+app.get('/delete-donation/:nombrePersona', async (req, res) => {
+  const { nombrePersona } = req.params;
+
+  try {
+    // Aquí supongo que tienes un modelo de donación como 'Donation' que representa tu colección
+    await Donation.deleteOne({ NombrePersona: nombrePersona });
+    res.redirect('/donationhistory'); // Redirige a la lista de donaciones después de eliminar
+  } catch (error) {
+    console.error('Error deleting donation:', error);
+    res.status(500).send('Error deleting donation');
+  }
+});
+
+
+app.get('/edit-declaration/:nombrePersona', (req, res) => {
+  const nombrePersona = req.params.nombrePersona;
+
+  // Buscar la donación en la base de datos usando nombrePersona
+  Donacion.findOne({ NombrePersona: nombrePersona })
+    .then(donation => {
+      if (donation) {
+        res.render('edit-donation', { donation });
+      } else {
+        res.status(404).send('Donation not found');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Error fetching donation');
+    });
+});
+
+
+
+
+
 app.get('/api/donaciones', async (req, res) => {
   try {
     const donations = await Donation.find().sort({ NombrePersona: 1 });
@@ -72,6 +109,53 @@ app.get('/api/donaciones', async (req, res) => {
   } catch (error) {
     console.error("Error fetching donations:", error);
     res.status(500).json({ error: 'Failed to fetch donations' });
+  }
+});
+
+
+app.get('/edit-declaration/:nombrePersona', async (req, res) => {
+  const nombrePersona = req.params.nombrePersona;
+
+  try {
+    // Buscar la donación en la base de datos usando el nombre del donante
+    const donation = await Donation.findOne({ NombrePersona: nombrePersona });
+
+    if (donation) {
+      // Enviar los datos de la donación como JSON
+      res.json(donation);
+    } else {
+      res.status(404).send('Donation not found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching donation');
+  }
+});
+
+app.post('/edit-donation', async (req, res) => {
+  const { NombrePersona, fecha, descripcion, monto } = req.body;
+
+  try {
+    // Buscar la donación por el nombre del donante (o por otro identificador único)
+    const donation = await Donation.findOne({ NombrePersona: NombrePersona });
+
+    if (donation) {
+      // Actualizar los campos de la donación con los nuevos datos
+      donation.FechaDonacion = new Date(fecha);  // Asegúrate de que el formato de la fecha sea correcto
+      donation.Descripcion = descripcion;
+      donation.Monto = monto;
+
+      // Guardar los cambios en la base de datos
+      await donation.save();
+
+      // Redirigir a la página de historial o mostrar un mensaje de éxito
+      res.redirect('/donationhistory');
+    } else {
+      res.status(404).send('Donation not found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating donation');
   }
 });
 
@@ -123,6 +207,29 @@ app.get('/generate-pdf', async (req, res) => {
 
   doc.end();
 });
+
+// Ruta para cargar la página de edición de donaciones
+app.get('/edit-declaration/:nombrePersona', async (req, res) => {
+  try {
+    const nombrePersona = req.params.nombrePersona;
+
+    // Buscar la donación en la base de datos usando el nombre del donante
+    const donation = await Donacion.findOne({ NombrePersona: nombrePersona });
+
+    if (donation) {
+      // Renderizar la vista y pasar la donación como un objeto JSON dentro de un script
+      res.render('edit-donation', { 
+        donation: JSON.stringify(donation)  // Convertir el objeto a JSON
+      });
+    } else {
+      res.status(404).send('Donation not found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching donation');
+  }
+});
+
 
 // Ruta: Generar PDF resumen por nombre de donante
 app.get('/generate-summary', async (req, res) => {

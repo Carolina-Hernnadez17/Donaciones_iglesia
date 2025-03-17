@@ -5,83 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Donor Declaration</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <style>
-    .hero {
-      background: #f8f9fa;
-      padding: 2rem;
-      border-radius: 0.5rem;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-  </style>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-          <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
-          <div class="collapse navbar-collapse">
-              <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
-                      <a class="nav-link" href="/generatereports">Generate Reports</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="/donationhistory">Donation History</a>
-                  </li>
-              </ul>
-          </div>
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/generatereports">Generate Reports</a></li>
+          <li class="nav-item"><a class="nav-link" href="/donationhistory">Donation History</a></li>
+        </ul>
       </div>
+    </div>
   </nav>
 
   <div class="container mt-5">
-    <!-- Hero Section with Explanation -->
     <div class="hero">
       <h1>Edit Donor Donation</h1>
       <p>Edit the details below for the selected donor. Once done, you can generate the declaration letter.</p>
     </div>
 
-    <!-- Form to Edit Donor Information -->
+    
+
     <div class="row mb-4">
       <div class="col-md-6 mx-auto">
         <div class="card">
-          <div class="card-header">
-            Edit Donor Information
-          </div>
+          <div class="card-header">Edit Donor Information</div>
           <div class="card-body">
-            <!-- Form to update donor info and generate PDF -->
-            <form action="/generate-declaration-pdf" method="post">
+            <form id="editDonationForm" action="/edit-donation" method="post">
               <div class="mb-3">
                 <label for="nombreDonante" class="form-label">Donor Name:</label>
-                <input type="text" class="form-control" id="nombreDonante" name="NombrePersona" value="<%= donor.NombrePersona %>" required readonly>
+                <input type="text" class="form-control" id="nombreDonante" name="NombrePersona" required readonly>
               </div>
               <div class="mb-3">
                 <label for="fecha" class="form-label">Donation Date:</label>
-                <input type="date" class="form-control" id="fecha" name="fecha" value="<%= donor.FechaDonacion.toISOString().split('T')[0] %>" required>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
               </div>
               <div class="mb-3">
                 <label for="descripcion" class="form-label">Description:</label>
-                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required><%= donor.Descripcion %></textarea>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
               </div>
               <div class="mb-3">
                 <label for="monto" class="form-label">Donation Amount:</label>
-                <input type="number" class="form-control" id="monto" name="monto" value="<%= donor.Monto %>" step="0.01" required>
+                <input type="number" class="form-control" id="monto" name="monto" step="0.01" required>
               </div>
-              <div class="mb-3">
-                <label for="total" class="form-label">Total Donations:</label>
-                <input type="number" class="form-control" id="total" name="total" value="<%= total %>" step="0.01" readonly>
-              </div>
-              <button type="submit" class="btn btn-success btn-lg w-100">Generate Declaration Letter</button>
+              <button type="submit" class="btn btn-success btn-lg w-100">Update Donation</button>
             </form>
+            
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script>
+    // Obtener el nombre del donante desde la URL
+    const donorName = window.location.pathname.split('/').pop();
+
+    // Realizar una solicitud AJAX para obtener los datos de la donación
+    fetch(`/api/donor/${donorName}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.donor) {
+          // Llenar los campos del formulario con los datos de la donación
+          document.getElementById('nombreDonante').value = data.donor.NombrePersona;
+          document.getElementById('fecha').value = new Date(data.donor.FechaDonacion).toISOString().split('T')[0];
+          document.getElementById('descripcion').value = data.donor.Descripcion;
+          document.getElementById('monto').value = data.donor.Monto;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching donor data:', error);
+      });
+  </script>
 
   <!-- Footer -->
   <footer class="bg-dark text-white mt-5 py-4">
@@ -89,6 +86,5 @@
       <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>
     </div>
   </footer>
-
 </body>
 </html>
