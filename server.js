@@ -31,20 +31,20 @@ const Donation = require('./models/Donation');
 // Rutas para servir las vistas HTML
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/donationhistory', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'donationhistory.html'));
+  res.sendFile(path.join(__dirname, 'public', 'donationhistory.html'));
 });
 
 app.get('/generatereports', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'generatereports.html'));
+  res.sendFile(path.join(__dirname, 'public', 'generatereports.html'));
 });
 
 app.get('/edit-declaration/:donorName', (req, res) => {
   // Ahora se envía el archivo HTML de edición, y la carga dinámica de datos deberá hacerse vía JavaScript en el cliente
-  res.sendFile(path.join(__dirname, 'views', 'editdeclaration.html'));
+  res.sendFile(path.join(__dirname, 'public', 'editdeclaration.html'));
 });
 
 app.get('/api/donor/:donorName', async (req, res) => {
