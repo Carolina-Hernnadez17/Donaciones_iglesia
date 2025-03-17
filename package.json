@@ -4,8 +4,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-  "dev": "nodemon server.js",
-  "build": "webpack --config webpack.config.js"
+    "dev": "nodemon server.js",
+    "build": "npm run build"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
@@ -17,9 +17,7 @@
     "pdfkit": "^0.16.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^4.10.0"
+    "nodemon": "^3.1.9"
   },
   "engines": {
     "node": ">=14.0.0"
