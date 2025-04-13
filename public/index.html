@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Donation Registration</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     .hero {
       background: #f8f9fa;
@@ -27,23 +27,21 @@
       text-transform: uppercase;
       font-weight: bold;
       transition: all 0.3s ease-in-out;
-      display: inline-block;
     }
     .btn-custom:hover {
       background-color: #218838;
       border-color: #218838;
       transform: translateY(-3px);
     }
-    .btn-custom:focus { outline: none; }
-    .btn-custom:active {
-      background-color: #1e7e34;
-      border-color: #1c7430;
-      transform: translateY(1px);
+    .table-wrapper {
+      max-height: 350px;
+      overflow-y: auto;
+      margin-bottom: 2rem;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
     }
-    .btn-custom:disabled {
-      background-color: #c3e6cb;
-      border-color: #c3e6cb;
-      color: #6c757d;
+    table th, table td {
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -74,22 +72,20 @@
 
     <!-- Registration Form -->
     <div class="form-container card mb-4">
-      <div class="card-header">
-        Register a New Donation
-      </div>
+      <div class="card-header">Register a New Donation</div>
       <div class="card-body">
         <form action="/donations" method="POST">
           <div class="mb-3">
             <label for="NombrePersona" class="form-label">Name</label>
-            <input type="text" class="form-control" name="NombrePersona" placeholder="Enter donor's name" required>
+            <input type="text" class="form-control" name="NombrePersona" required>
           </div>
           <div class="mb-3">
             <label for="Descripcion" class="form-label">Description</label>
-            <input type="text" class="form-control" name="Descripcion" placeholder="Enter donation description" required>
+            <input type="text" class="form-control" name="Descripcion" required>
           </div>
           <div class="mb-3">
             <label for="Monto" class="form-label">Amount</label>
-            <input type="number" class="form-control" name="Monto" placeholder="Enter donation amount" required>
+            <input type="number" step="0.01" min="0" class="form-control" name="Monto" required>
           </div>
           <div class="mb-3">
             <label for="FechaDonacion" class="form-label">Donation Date</label>
@@ -102,8 +98,8 @@
 
     <!-- Donation List Table -->
     <h2 class="mb-3">Donation List</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered">
+    <div class="table-wrapper">
+      <table class="table table-bordered table-striped">
         <thead class="table-dark">
           <tr>
             <th>Name</th>
@@ -113,7 +109,7 @@
           </tr>
         </thead>
         <tbody id="donationTableBody">
-          <!-- Las filas se cargarán dinámicamente -->
+          <!-- Donation rows will be dynamically inserted here -->
         </tbody>
       </table>
     </div>
@@ -130,7 +126,7 @@
           row.innerHTML = `
             <td>${donation.NombrePersona}</td>
             <td>${donation.Descripcion}</td>
-            <td>$${donation.Monto.toFixed(2)}</td>
+            <td>$${parseFloat(donation.Monto).toFixed(2)}</td>
             <td>${new Date(donation.FechaDonacion).toLocaleDateString()}</td>
           `;
           tbody.appendChild(row);
@@ -141,6 +137,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  
+  <!-- Footer -->
   <footer class="bg-dark text-white mt-5 py-4">
     <div class="container text-center">
       <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>

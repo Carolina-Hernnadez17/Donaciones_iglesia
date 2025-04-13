@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Donation History</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
   <style>
     .hero {
       background: #f8f9fa;
@@ -29,9 +29,29 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
     }
-    .btn-improved:focus {
-      outline: none;
-      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.5);
+    .search-bar {
+      max-width: 400px;
+      margin: 0 auto 20px auto;
+    }
+
+    /* Scroll style */
+    .scroll-table-wrapper {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+    }
+
+    /* Optional: Custom scrollbar for WebKit */
+    .scroll-table-wrapper::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scroll-table-wrapper::-webkit-scrollbar-thumb {
+      background: #007bff;
+      border-radius: 10px;
+    }
+    .scroll-table-wrapper::-webkit-scrollbar-track {
+      background: #e9ecef;
     }
   </style>
 </head>
@@ -64,10 +84,15 @@
       <a href="/generate-pdf" class="btn btn-improved">Generate All Donations PDF</a>
     </div>
 
+    <!-- Search Bar -->
+    <div class="search-bar mb-3">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search donations...">
+    </div>
+
     <!-- Donation List Table -->
     <h2 class="mb-3">Donation List</h2>
-    <div class="table-responsive">
-      <table class="table table-bordered">
+    <div class="scroll-table-wrapper mb-5">
+      <table class="table table-bordered mb-0">
         <thead class="table-dark">
           <tr>
             <th>Donor Name</th>
@@ -77,7 +102,7 @@
           </tr>
         </thead>
         <tbody id="donationHistoryTableBody">
-          <!-- Las filas se cargarán dinámicamente -->
+          <!-- Rows will be dynamically added -->
         </tbody>
       </table>
     </div>
@@ -100,10 +125,21 @@
         });
       })
       .catch(error => console.error('Error:', error));
+
+    // Filtro de búsqueda
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const filter = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#donationHistoryTableBody tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+      });
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
   <footer class="bg-dark text-white mt-5 py-4">
     <div class="container text-center">
       <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>
