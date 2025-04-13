@@ -296,7 +296,9 @@ app.post('/generate-declaration-pdf', async (req, res) => {
   doc.end();
 });
 
-// Ruta: Agregar donación (envío del formulario)
+
+
+// Ruta para registrar donaciones
 app.post('/donations', async (req, res) => {
   const { NombrePersona, Descripcion, Monto, FechaDonacion } = req.body;
   const fechaIngresada = new Date(FechaDonacion);
@@ -305,15 +307,35 @@ app.post('/donations', async (req, res) => {
     return res.status(400).send("Fecha de donación no válida.");
   }
 
-  const donation = new Donation({ 
-    NombrePersona, 
-    Descripcion, 
-    Monto, 
-    FechaDonacion: fechaIngresada 
-  });
+  if (Descripcion.length !== Monto.length) {
+    return res.status(400).send("Descripción y Monto deben tener la misma cantidad de elementos.");
+  }
 
-  await donation.save();
-  res.redirect('/');
+  const donations = Descripcion.map((desc, index) => ({
+    NombrePersona,
+    Descripcion: desc,
+    Monto: Monto[index],
+    FechaDonacion: fechaIngresada,
+  }));
+
+  try {
+    await Donation.insertMany(donations);
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error al guardar las donaciones:', error);
+    res.status(500).send("Error al guardar las donaciones.");
+  }
+});
+
+// Ruta para obtener todas las donaciones
+app.get('/api/donaciones', async (req, res) => {
+  try {
+    const donations = await Donation.find();
+    res.json(donations);
+  } catch (error) {
+    console.error('Error al recuperar las donaciones:', error);
+    res.status(500).send("Error al recuperar las donaciones.");
+  }
 });
 
 app.listen(PORT, () => {

@@ -14,7 +14,7 @@
       text-align: center;
     }
     .form-container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
     }
     .btn-custom {
@@ -72,23 +72,30 @@
 
     <!-- Registration Form -->
     <div class="form-container card mb-4">
-      <div class="card-header">Register a New Donation</div>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Register a New Donation</span>
+        <button type="button" class="btn btn-sm btn-success" onclick="addDonationField()">+ Add More</button>
+      </div>
       <div class="card-body">
-        <form action="/donations" method="POST">
+        <form action="/donations" method="POST" id="donationForm">
           <div class="mb-3">
             <label for="NombrePersona" class="form-label">Name</label>
             <input type="text" class="form-control" name="NombrePersona" required>
           </div>
-          <div class="mb-3">
-            <label for="Descripcion" class="form-label">Description</label>
-            <input type="text" class="form-control" name="Descripcion" required>
+          <div id="donationFields">
+            <div class="row g-2 donation-entry mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" name="Descripcion[]" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Amount</label>
+                <input type="number" step="0.01" min="0" class="form-control" name="Monto[]" required>
+              </div>
+            </div>
           </div>
           <div class="mb-3">
-            <label for="Monto" class="form-label">Amount</label>
-            <input type="number" step="0.01" min="0" class="form-control" name="Monto" required>
-          </div>
-          <div class="mb-3">
-            <label for="FechaDonacion" class="form-label">Donation Date</label>
+            <label class="form-label">Donation Date</label>
             <input type="date" class="form-control" name="FechaDonacion" required>
           </div>
           <button type="submit" class="btn btn-custom">Register Donation</button>
@@ -106,6 +113,7 @@
             <th>Description</th>
             <th>Amount</th>
             <th>Donation Date</th>
+            <th>Details</th>
           </tr>
         </thead>
         <tbody id="donationTableBody">
@@ -115,8 +123,42 @@
     </div>
   </div>
 
-  <!-- Script para cargar datos dinámicamente -->
+  <!-- Modal for donation details -->
+  <div class="modal fade" id="donationDetailsModal" tabindex="-1" aria-labelledby="donationDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="donationDetailsModalLabel">Donation Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Name:</strong> <span id="detailNombre"></span></p>
+          <p><strong>Description:</strong> <span id="detailDescripcion"></span></p>
+          <p><strong>Amount:</strong> $<span id="detailMonto"></span></p>
+          <p><strong>Date:</strong> <span id="detailFecha"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script>
+    function addDonationField() {
+      const donationFields = document.getElementById('donationFields');
+      const div = document.createElement('div');
+      div.classList.add('row', 'g-2', 'donation-entry', 'mb-3');
+      div.innerHTML = `
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="Descripcion[]" placeholder="Description" required>
+        </div>
+        <div class="col-md-6">
+          <input type="number" step="0.01" min="0" class="form-control" name="Monto[]" placeholder="Amount" required>
+        </div>
+      `;
+      donationFields.appendChild(div);
+    }
+
+    // Load donations into the table
     fetch('/api/donaciones')
       .then(response => response.json())
       .then(data => {
@@ -128,16 +170,37 @@
             <td>${donation.Descripcion}</td>
             <td>$${parseFloat(donation.Monto).toFixed(2)}</td>
             <td>${new Date(donation.FechaDonacion).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-info btn-sm" 
+                onclick="showDonationDetails(
+                  '${donation.NombrePersona}', 
+                  '${donation.Descripcion}', 
+                  '${parseFloat(donation.Monto).toFixed(2)}', 
+                  '${new Date(donation.FechaDonacion).toLocaleDateString()}'
+                )">
+                Details
+              </button>
+            </td>
           `;
           tbody.appendChild(row);
         });
       })
       .catch(error => console.error('Error:', error));
+
+    function showDonationDetails(nombre, descripcion, monto, fecha) {
+      document.getElementById('detailNombre').textContent = nombre;
+      document.getElementById('detailDescripcion').textContent = descripcion;
+      document.getElementById('detailMonto').textContent = monto;
+      document.getElementById('detailFecha').textContent = fecha;
+
+      const modal = new bootstrap.Modal(document.getElementById('donationDetailsModal'));
+      modal.show();
+    }
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-  
+
   <!-- Footer -->
   <footer class="bg-dark text-white mt-5 py-4">
     <div class="container text-center">
