@@ -119,7 +119,7 @@
             <td>${donation.NombrePersona}</td>
             <td>${donation.Descripcion}</td>
             <td>$${donation.Monto.toFixed(2)}</td>
-            <td>${new Date(donation.FechaDonacion).toLocaleDateString()}</td>
+            <td>${donation.FechaDonacion}</td>
           `;
           tbody.appendChild(row);
         });

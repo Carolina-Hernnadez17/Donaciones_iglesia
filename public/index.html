@@ -169,7 +169,7 @@
             <td>${donation.NombrePersona}</td>
             <td>${donation.Descripcion}</td>
             <td>$${parseFloat(donation.Monto).toFixed(2)}</td>
-            <td>${new Date(donation.FechaDonacion).toLocaleDateString()}</td>
+            <td>${donation.FechaDonacion}</td>
             <td>
               <button class="btn btn-info btn-sm" 
                 onclick="showDonationDetails(
@@ -177,7 +177,7 @@
                   '${donation.Descripcion}', 
                   '${parseFloat(donation.Monto).toFixed(2)}', 
                   '${new Date(donation.FechaDonacion).toLocaleDateString()}'
-                )">
+                )"
                 Details
               </button>
             </td>
