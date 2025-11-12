@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Reports - Fuente de Vida</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .dashboard-card {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+
+    
+
+    
+
+    /* Texto en hero - blanco */
+    .hero p {
+      color: white !important;
+    }
+
+    /* Texto en dashboard cards (fondo blanco) - negro */
+    .dashboard-card p, .dashboard-card span, .dashboard-card label {
+      color: #333;
+    }
+
+    /* Stat cards con fondo de color - todo blanco */
+    .stat-card {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .stat-card h3, .stat-card p {
+      color: white !important;
+    }
+
+    .stat-card.green {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .stat-card.orange {
+      background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+      box-shadow: 0 4px 15px rgba(253, 126, 20, 0.4);
+    }
+
+    .stat-card.red {
+      background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    /* Títulos y textos en stat-cards con gradiente - blancos */
+    .stat-card h3 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 0;
+      color: white !important;
+    }
+
+    .stat-card h4 {
+      color: white !important;
+    }
+
+    .stat-card h5 {
+      color: white !important;
+    }
+
+    .stat-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      opacity: 0.95;
+      color: white !important;
+    }
+
+    .filter-section {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+    }
+
+    /* Texto en filtros (fondo gris claro) - negro */
+    .filter-section label, .filter-section p {
+      color: #333;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+      margin-bottom: 2rem;
+    }
+
+    /* Texto en containers blancos - negro */
+    .chart-container p, .chart-container span {
+      color: #333;
+    }
+
+    /* Badges de departamentos con gradientes - texto blanco */
+    .department-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white !important;
+    }
+
+    .department-badge:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,.2);
+    }
+
+    .dept-bgmc { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+    .dept-misiones { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+    .dept-diezmo { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+    .dept-speed { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+    .dept-reserve { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+    .dept-templo { background: linear-gradient(135deg, #1abc9c, #16a085); color: white; }
+    .dept-sunday { background: linear-gradient(135deg, #34495e, #2c3e50); color: white; }
+    .dept-wednesday { background: linear-gradient(135deg, #e67e22, #d35400); color: white; }
+    .dept-friday { background: linear-gradient(135deg, #16a085, #1abc9c); color: white; }
+
+    .btn-export {
+      border-radius: 25px;
+      padding: 12px 30px;
+      font-weight: 600;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-export:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,.2);
+    }
+
+    .table-modern {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    }
+
+    .table-modern thead {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+
+    /* Encabezados de tabla con fondo verde - blancos */
+    .table-modern thead th {
+      color: white !important;
+    }
+
+    /* Contenido de tabla - negro */
+    .table-modern tbody td {
+      color: #333;
+    }
+
+    .table-modern tbody tr:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: scale(1.01);
+      transition: all 0.2s ease;
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .date-range-badge {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      display: inline-block;
+      margin: 10px 0;
+    }
+
+    /* Texto en badges con fondo de color - blanco */
+    .date-range-badge span, .date-range-badge p {
+      color: white !important;
+    }
+
+    .icon-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.8rem;
+    }
+
+    .no-data-message {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+
+    /* Texto de no data - gris */
+    .no-data-message p, .no-data-message span {
+      color: #6c757d;
+    }
+
+    .no-data-message i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* Responsive mejorado */
+    @media (max-width: 768px) {
+      .dashboard-card {
+        padding: 1rem;
+      }
+
+      .stat-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-card h3 {
+        font-size: 2rem !important;
+      }
+
+      .stat-card p {
+        font-size: 0.9rem;
+      }
+
+      .hero h1 {
+        font-size: 1.5rem !important;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+      }
+
+      h3 {
+        font-size: 1.2rem !important;
+      }
+
+      .icon-circle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+
+      .btn-export {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+
+      .table-modern {
+        font-size: 0.85rem;
+      }
+
+      .table-modern thead th {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem;
+      }
+
+      .table-modern tbody td {
+        padding: 0.5rem 0.25rem;
+      }
+
+      .department-badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container-fluid {
+        padding: 0.5rem;
+      }
+
+      .hero {
+        padding: 1rem 0.5rem;
+      }
+
+      .hero h1 {
+        font-size: 1.3rem !important;
+      }
+
+      .stat-card h3 {
+        font-size: 1.75rem !important;
+      }
+
+      h3 {
+        font-size: 1.1rem !important;
+      }
+
+      .btn-export {
+        font-size: 12px;
+        padding: 8px 15px;
+      }
+
+      .form-control {
+        font-size: 0.9rem;
+      }
+
+      .form-label {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <i class="bi bi-heart-fill"></i> FUENTE DE VIDA
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="bi bi-house"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/reports">
+              <i class="bi bi-graph-up"></i> Advanced Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/generatereports">
+              <i class="bi bi-file-earmark-text"></i> Generate Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/donationhistory">
+              <i class="bi bi-clock-history"></i> History
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-4">
+    <!-- Hero Section -->
+    <div class="hero mb-4">
+      <div class="icon-circle">
+        <i class="bi bi-bar-chart-line"></i>
+      </div>
+      <h1><i class="bi bi-graph-up-arrow"></i> Advanced Reports Dashboard</h1>
+      <p>Comprehensive analytics and insights for donation management</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="stat-card">
+          <div class="icon-circle">
+            <i class="bi bi-currency-dollar"></i>
+          </div>
+          <h3 id="totalAmount">$0.00</h3>
+          <p>Total Donations</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card green">
+          <div class="icon-circle">
+            <i class="bi bi-people"></i>
+          </div>
+          <h3 id="totalDonors">0</h3>
+          <p>Total Donors</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card orange">
+          <div class="icon-circle">
+            <i class="bi bi-bookmark-star"></i>
+          </div>
+          <h3 id="totalTransactions">0</h3>
+          <p>Transactions</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card red">
+          <div class="icon-circle">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h3 id="avgDonation">$0.00</h3>
+          <p>Average Donation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="dashboard-card">
+      <h3 class="mb-4">
+        <i class="bi bi-funnel"></i> Advanced Filters
+      </h3>
+      
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><i class="bi bi-building"></i> Department</label>
+          <select class="form-control" id="filterDepartment">
+            <option value="all">All Departments</option>
+            <option value="BGMC">BGMC</option>
+            <option value="Misiones">Misiones</option>
+            <option value="Diezmo">Diezmo</option>
+            <option value="Speed The Light">Speed The Light</option>
+            <option value="Reserve">Reserve</option>
+            <option value="Pro Templo">Pro Templo</option>
+            <option value="Sunday Offering">Sunday Offering</option>
+            <option value="Wednesday Offering">Wednesday Offering</option>
+            <option value="Friday Offering">Friday Offering</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><i class="bi bi-calendar"></i> Start Date</label>
+          <input type="date" class="form-control" id="filterStartDate">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><i class="bi bi-calendar-check"></i> End Date</label>
+          <input type="date" class="form-control" id="filterEndDate">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><i class="bi bi-person"></i> Donor Name</label>
+          <input type="text" class="form-control" id="filterDonorName" placeholder="Search by name...">
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-12 text-center">
+          <button class="btn btn-primary btn-export" onclick="applyFilters()">
+            <i class="bi bi-search"></i> Apply Filters
+          </button>
+          <button class="btn btn-secondary btn-export" onclick="clearAllFilters()">
+            <i class="bi bi-x-circle"></i> Clear Filters
+          </button>
+          <button class="btn btn-success btn-export" onclick="exportToExcel()">
+            <i class="bi bi-file-earmark-excel"></i> Export Excel
+          </button>
+          <button class="btn btn-danger btn-export" onclick="exportToPDF()">
+            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+          </button>
+        </div>
+      </div>
+
+      <div id="activeFilters" class="mt-3"></div>
+    </div>
+
+    <!-- Department Summary -->
+    <div class="dashboard-card">
+      <h3 class="mb-4">
+        <i class="bi bi-pie-chart"></i> Department Summary
+      </h3>
+      <div id="departmentSummary" class="row">
+        <!-- Se llenará dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Detailed Report Table -->
+    <div class="dashboard-card">
+      <h3 class="mb-4">
+        <i class="bi bi-table"></i> Detailed Report
+      </h3>
+      
+      <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading data...</p>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-modern table-hover">
+          <thead>
+            <tr>
+              <th><i class="bi bi-hash"></i> #</th>
+              <th><i class="bi bi-person"></i> Donor Name</th>
+              <th><i class="bi bi-building"></i> Department</th>
+              <th><i class="bi bi-currency-dollar"></i> Amount</th>
+              <th><i class="bi bi-calendar"></i> Date</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody">
+            <!-- Se llenará dinámicamente -->
+          </tbody>
+          <tfoot id="reportTableFoot" style="display: none;">
+            <tr class="table-dark">
+              <th colspan="3" class="text-end">TOTAL:</th>
+              <th id="footerTotal">$0.00</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div id="noDataMessage" class="no-data-message" style="display: none;">
+        <i class="bi bi-inbox"></i>
+        <h4>No data found</h4>
+        <p>Try adjusting your filters or add some donations first.</p>
+      </div>
+    </div>
+
+    <!-- Top Donors -->
+    <div class="dashboard-card">
+      <h3 class="mb-4">
+        <i class="bi bi-trophy"></i> Top Donors
+      </h3>
+      <div id="topDonors" class="row">
+        <!-- Se llenará dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+      <p>&copy; 2025 FUENTE DE VIDA. All rights reserved.</p>
+      <p><small>Advanced Reports Dashboard v1.0</small></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  
+  <script>
+    let allDonations = [];
+    let filteredDonations = [];
+
+    // Cargar datos al inicio
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAllData();
+    });
+
+    async function loadAllData() {
+      document.getElementById('loadingSpinner').style.display = 'block';
+      
+      try {
+        const response = await fetch('/api/donaciones');
+        allDonations = await response.json();
+        filteredDonations = [...allDonations];
+        
+        updateDashboard();
+        displayReport();
+        updateDepartmentSummary();
+        updateTopDonors();
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }
+    }
+
+    function updateDashboard() {
+      const total = filteredDonations.reduce((sum, d) => sum + d.Monto, 0);
+      const uniqueDonors = new Set(filteredDonations.map(d => d.NombrePersona)).size;
+      const avgDonation = filteredDonations.length > 0 ? total / filteredDonations.length : 0;
+
+      document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+      document.getElementById('totalDonors').textContent = uniqueDonors;
+      document.getElementById('totalTransactions').textContent = filteredDonations.length;
+      document.getElementById('avgDonation').textContent = `$${avgDonation.toFixed(2)}`;
+    }
+
+    function displayReport() {
+      const tbody = document.getElementById('reportTableBody');
+      const noDataMsg = document.getElementById('noDataMessage');
+      const tablefoot = document.getElementById('reportTableFoot');
+      
+      tbody.innerHTML = '';
+
+      if (filteredDonations.length === 0) {
+        noDataMsg.style.display = 'block';
+        tablefoot.style.display = 'none';
+        return;
+      }
+
+      noDataMsg.style.display = 'none';
+      tablefoot.style.display = 'table-footer-group';
+
+      let total = 0;
+      filteredDonations.forEach((donation, index) => {
+        const fecha = new Date(donation.FechaDonacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit' 
+        });
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${index + 1}</strong></td>
+          <td><i class="bi bi-person-circle"></i> ${donation.NombrePersona}</td>
+          <td><span class="department-badge dept-${getDepartmentClass(donation.Descripcion)}">${donation.Descripcion}</span></td>
+          <td><strong>$${donation.Monto.toFixed(2)}</strong></td>
+          <td><i class="bi bi-calendar-event"></i> ${fechaFormateada}</td>
+        `;
+        tbody.appendChild(row);
+        total += donation.Monto;
+      });
+
+      document.getElementById('footerTotal').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function updateDepartmentSummary() {
+      const summary = {};
+      filteredDonations.forEach(d => {
+        if (!summary[d.Descripcion]) {
+          summary[d.Descripcion] = { count: 0, total: 0 };
+        }
+        summary[d.Descripcion].count++;
+        summary[d.Descripcion].total += d.Monto;
+      });
+
+      const container = document.getElementById('departmentSummary');
+      container.innerHTML = '';
+
+      Object.entries(summary).forEach(([dept, data]) => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-3';
+        col.innerHTML = `
+          <div class="stat-card" style="background: linear-gradient(135deg, ${getDepartmentColor(dept)})">
+            <div class="icon-circle">
+              <i class="bi bi-building"></i>
+            </div>
+            <h4>${dept}</h4>
+            <h3>$${data.total.toFixed(2)}</h3>
+            <p>${data.count} donations</p>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    function updateTopDonors() {
+      const donorTotals = {};
+      filteredDonations.forEach(d => {
+        if (!donorTotals[d.NombrePersona]) {
+          donorTotals[d.NombrePersona] = 0;
+        }
+        donorTotals[d.NombrePersona] += d.Monto;
+      });
+
+      const topDonors = Object.entries(donorTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6);
+
+      const container = document.getElementById('topDonors');
+      container.innerHTML = '';
+
+      topDonors.forEach(([name, total], index) => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-3';
+        const colors = ['#667eea, #764ba2', '#28a745, #20c997', '#fd7e14, #ffc107', '#dc3545, #e83e8c', '#3498db, #2980b9', '#9b59b6, #8e44ad'];
+        col.innerHTML = `
+          <div class="stat-card" style="background: linear-gradient(135deg, ${colors[index]})">
+            <div class="icon-circle">
+              <i class="bi bi-award"></i>
+            </div>
+            <h5>${name}</h5>
+            <h3>$${total.toFixed(2)}</h3>
+            <p><i class="bi bi-trophy"></i> Top ${index + 1} Donor</p>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    function applyFilters() {
+      const dept = document.getElementById('filterDepartment').value;
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+      const donorName = document.getElementById('filterDonorName').value.toLowerCase();
+
+      filteredDonations = allDonations.filter(d => {
+        if (dept !== 'all' && d.Descripcion !== dept) return false;
+        if (donorName && !d.NombrePersona.toLowerCase().includes(donorName)) return false;
+        
+        if (startDate || endDate) {
+          const dDate = new Date(d.FechaDonacion);
+          if (startDate && dDate < new Date(startDate + 'T00:00:00')) return false;
+          if (endDate && dDate > new Date(endDate + 'T23:59:59')) return false;
+        }
+        
+        return true;
+      });
+
+      updateDashboard();
+      displayReport();
+      updateDepartmentSummary();
+      updateTopDonors();
+      updateActiveFilters();
+    }
+
+    function clearAllFilters() {
+      document.getElementById('filterDepartment').value = 'all';
+      document.getElementById('filterStartDate').value = '';
+      document.getElementById('filterEndDate').value = '';
+      document.getElementById('filterDonorName').value = '';
+      filteredDonations = [...allDonations];
+      
+      updateDashboard();
+      displayReport();
+      updateDepartmentSummary();
+      updateTopDonors();
+      document.getElementById('activeFilters').innerHTML = '';
+    }
+
+    function updateActiveFilters() {
+      const container = document.getElementById('activeFilters');
+      const dept = document.getElementById('filterDepartment').value;
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+      const donorName = document.getElementById('filterDonorName').value;
+
+      let html = '<div class="mt-3"><strong>Active Filters:</strong> ';
+      let hasFilters = false;
+
+      if (dept !== 'all') {
+        html += `<span class="date-range-badge"><i class="bi bi-building"></i> ${dept}</span> `;
+        hasFilters = true;
+      }
+      if (startDate || endDate) {
+        html += `<span class="date-range-badge"><i class="bi bi-calendar-range"></i> ${startDate || '...'} to ${endDate || '...'}</span> `;
+        hasFilters = true;
+      }
+      if (donorName) {
+        html += `<span class="date-range-badge"><i class="bi bi-person"></i> ${donorName}</span> `;
+        hasFilters = true;
+      }
+
+      html += '</div>';
+      container.innerHTML = hasFilters ? html : '';
+    }
+
+    function exportToPDF() {
+      const dept = document.getElementById('filterDepartment').value;
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+
+      let url = '/generate-department-pdf?';
+      if (dept !== 'all') url += `department=${dept}&`;
+      if (startDate) url += `startDate=${startDate}&`;
+      if (endDate) url += `endDate=${endDate}`;
+
+      window.open(url, '_blank');
+    }
+
+    function exportToExcel() {
+      alert('Excel export feature coming soon!');
+    }
+
+    function getDepartmentClass(dept) {
+      const map = {
+        'BGMC': 'bgmc',
+        'Misiones': 'misiones',
+        'Diezmo': 'diezmo',
+        'Speed The Light': 'speed',
+        'Reserve': 'reserve',
+        'Pro Templo': 'templo',
+        'Sunday Offering': 'sunday',
+        'Wednesday Offering': 'wednesday',
+        'Friday Offering': 'friday'
+      };
+      return map[dept] || 'bgmc';
+    }
+
+    function getDepartmentColor(dept) {
+      const colors = {
+        'BGMC': '#e74c3c, #c0392b',
+        'Misiones': '#3498db, #2980b9',
+        'Diezmo': '#2ecc71, #27ae60',
+        'Speed The Light': '#f39c12, #e67e22',
+        'Reserve': '#9b59b6, #8e44ad',
+        'Pro Templo': '#1abc9c, #16a085',
+        'Sunday Offering': '#34495e, #2c3e50',
+        'Wednesday Offering': '#e67e22, #d35400',
+        'Friday Offering': '#16a085, #1abc9c'
+      };
+      return colors[dept] || '#667eea, #764ba2';
+    }
+  </script>
+</body>
+</html>

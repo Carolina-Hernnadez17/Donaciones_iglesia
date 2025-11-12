@@ -5,20 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Donation Registration</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
   <style>
     .hero {
-      background: #f8f9fa;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
       padding: 2rem;
       border-radius: 0.5rem;
       margin-bottom: 2rem;
       text-align: center;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
     }
+
+    .hero h4 {
+      color: white !important;
+    }
+
+    .hero p {
+      color: white !important;
+    }
+
+    /* Títulos en fondos blancos - verdes */
+    h1, h2, h3, h4, h5, h6 {
+      color: #28a745 !important;
+    }
+
+    /* Texto en forms y contenedores blancos - negro */
+    .form-container, .card-body, label, .form-label {
+      color: #333;
+    }
+
     .form-container {
       max-width: 800px;
       margin: 0 auto;
     }
     .btn-custom {
-      background-color: #28a745;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       color: white;
       border: 2px solid #28a745;
       border-radius: 30px;
@@ -29,9 +51,10 @@
       transition: all 0.3s ease-in-out;
     }
     .btn-custom:hover {
-      background-color: #218838;
-      border-color: #218838;
+      background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+      border-color: #20c997;
       transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
     }
     .table-wrapper {
       max-height: 350px;
@@ -43,6 +66,68 @@
     table th, table td {
       vertical-align: middle;
     }
+
+    /* Títulos en verde */
+    h2, h4.alert-heading {
+      color: #28a745 !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 1.5rem 1rem;
+      }
+
+      .hero h4 {
+        font-size: 1.2rem !important;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+      }
+
+      .form-container {
+        max-width: 100%;
+        padding: 0 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.4rem !important;
+      }
+
+      .table-wrapper {
+        max-height: 300px;
+      }
+
+      .btn-custom {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+        width: 100%;
+      }
+
+      .card-header .btn-sm {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero h4 {
+        font-size: 1.1rem !important;
+      }
+
+      .hero p {
+        font-size: 0.85rem;
+      }
+
+      h2 {
+        font-size: 1.2rem !important;
+      }
+
+      .donation-entry {
+        padding: 0.75rem 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -50,8 +135,17 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">FUENTE DE VIDA</a>
-      <div class="collapse navbar-collapse">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Advanced Reports</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="/generatereports">Generate Reports</a>
           </li>
@@ -66,7 +160,7 @@
   <div class="container mt-5">
     <!-- Explanation Section -->
     <div class="hero">
-      <h4 class="alert-heading">Donation Registration Page</h4>
+      <h4 class="">Donation Registration Page</h4>
       <p>This page allows you to register new donations using the form below. After registering, all donations will be listed in the table.</p>
     </div>
 
@@ -85,8 +179,19 @@
           <div id="donationFields">
             <div class="row g-2 donation-entry mb-3">
               <div class="col-md-6">
-                <label class="form-label">Description</label>
-                <input type="text" class="form-control" name="Descripcion[]" required>
+                <label class="form-label">Department</label>
+                <select class="form-control" name="Descripcion[]" required>
+                  <option value="">Select Department</option>
+                  <option value="BGMC">BGMC</option>
+                  <option value="Misiones">Misiones</option>
+                  <option value="Diezmo">Diezmo</option>
+                  <option value="Speed The Light">Speed The Light</option>
+                  <option value="Reserve">Reserve</option>
+                  <option value="Pro Templo">Pro Templo</option>
+                  <option value="Sunday Offering">Sunday Offering</option>
+                  <option value="Wednesday Offering">Wednesday Offering</option>
+                  <option value="Friday Offering">Friday Offering</option>
+                </select>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Amount</label>
@@ -149,7 +254,18 @@
       div.classList.add('row', 'g-2', 'donation-entry', 'mb-3');
       div.innerHTML = `
         <div class="col-md-6">
-          <input type="text" class="form-control" name="Descripcion[]" placeholder="Description" required>
+          <select class="form-control" name="Descripcion[]" required>
+            <option value="">Select Department</option>
+            <option value="BGMC">BGMC</option>
+            <option value="Misiones">Misiones</option>
+            <option value="Diezmo">Diezmo</option>
+            <option value="Speed The Light">Speed The Light</option>
+            <option value="Reserve">Reserve</option>
+            <option value="Pro Templo">Pro Templo</option>
+            <option value="Sunday Offering">Sunday Offering</option>
+            <option value="Wednesday Offering">Wednesday Offering</option>
+            <option value="Friday Offering">Friday Offering</option>
+          </select>
         </div>
         <div class="col-md-6">
           <input type="number" step="0.01" min="0" class="form-control" name="Monto[]" placeholder="Amount" required>
@@ -165,19 +281,26 @@
         const tbody = document.getElementById('donationTableBody');
         data.forEach(donation => {
           const row = document.createElement('tr');
+          const fecha = new Date(donation.FechaDonacion);
+          const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit' 
+          });
+          
           row.innerHTML = `
             <td>${donation.NombrePersona}</td>
             <td>${donation.Descripcion}</td>
             <td>$${parseFloat(donation.Monto).toFixed(2)}</td>
-            <td>${donation.FechaDonacion}</td>
+            <td>${fechaFormateada}</td>
             <td>
               <button class="btn btn-info btn-sm" 
                 onclick="showDonationDetails(
                   '${donation.NombrePersona}', 
                   '${donation.Descripcion}', 
                   '${parseFloat(donation.Monto).toFixed(2)}', 
-                  '${new Date(donation.FechaDonacion).toLocaleDateString()}'
-                )"
+                  '${fechaFormateada}'
+                )">
                 Details
               </button>
             </td>
