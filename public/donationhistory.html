@@ -5,31 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Donation History</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="css/styles.css"/>
   <style>
-    /* Estilos adicionales para esta página */
+    body {
+      background: #f8f9fa;
+    }
+
+    /* Hero Section Mejorado */
     .hero {
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       color: white;
-      padding: 2rem;
-      border-radius: 0.5rem;
+      padding: 3rem 2rem;
+      border-radius: 15px;
       margin-bottom: 2rem;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+      position: relative;
+      overflow: hidden;
     }
 
-    .hero h4 {
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 15s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
       color: white !important;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .hero p {
       color: white !important;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      opacity: 0.95;
     }
 
-    /* Texto en cards y contenedores blancos - negro */
-    .card-body, .table {
-      color: #333;
+    .icon-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+    }
+
+    /* Card Container */
+    .card-modern {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .card-modern:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
     }
 
     /* Títulos en fondos blancos - verdes */
@@ -37,106 +91,299 @@
       color: #28a745 !important;
     }
 
+    /* Action Buttons Container */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
     .btn-improved {
-      background: linear-gradient(to right, #28a745, #20c997);
+      background: linear-gradient(135deg, #28a745, #20c997);
       border: none;
       color: white;
-      font-weight: bold;
-      padding: 15px 30px;
-      font-size: 18px;
+      font-weight: 600;
+      padding: 15px 35px;
+      font-size: 16px;
       border-radius: 50px;
-      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
+
     .btn-improved:hover {
-      background: linear-gradient(to right, #20c997, #28a745);
+      background: linear-gradient(135deg, #20c997, #28a745);
       transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
-    }
-    .search-bar {
-      max-width: 400px;
-      margin: 0 auto 20px auto;
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+      color: white;
     }
 
-    /* Scroll style */
+    .btn-improved i {
+      font-size: 1.2rem;
+    }
+
+    /* Search Section */
+    .search-container {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+
+    .search-container input {
+      padding-left: 45px;
+      border-radius: 50px;
+      border: 2px solid #e9ecef;
+      padding: 12px 20px 12px 50px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .search-container input:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #28a745;
+      font-size: 1.2rem;
+      z-index: 10;
+    }
+
+    /* Table Improvements */
+    .table-container {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    }
+
+    .table-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #28a745;
+    }
+
+    .table-title i {
+      font-size: 1.8rem;
+      color: #28a745;
+    }
+
     .scroll-table-wrapper {
-      max-height: 400px;
+      max-height: 500px;
       overflow-y: auto;
-      border: 1px solid #dee2e6;
-      border-radius: 0.5rem;
+      border-radius: 10px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
     }
 
-    /* Optional: Custom scrollbar for WebKit */
     .scroll-table-wrapper::-webkit-scrollbar {
-      width: 8px;
+      width: 10px;
     }
+
     .scroll-table-wrapper::-webkit-scrollbar-thumb {
-      background: #28a745;
+      background: linear-gradient(135deg, #28a745, #20c997);
       border-radius: 10px;
     }
+
     .scroll-table-wrapper::-webkit-scrollbar-track {
-      background: #e9ecef;
+      background: #f1f1f1;
+      border-radius: 10px;
     }
 
-    /* Título de página */
-    h2.mb-3 {
-      color: #28a745 !important;
-      font-weight: 700;
+    .table {
+      margin-bottom: 0;
     }
 
-    /* Responsive para móviles */
+    .table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .table thead th {
+      color: white !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      border: none;
+      padding: 1rem;
+    }
+
+    .table tbody td {
+      color: #333;
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: #e9ecef;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(40, 167, 69, 0.05);
+      transform: scale(1.01);
+    }
+
+    /* Action Buttons in Table */
+    .btn-action {
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-action i {
+      font-size: 0.9rem;
+    }
+
+    .btn-action.btn-warning {
+      background: linear-gradient(135deg, #ffc107, #ff9800);
+      color: white;
+    }
+
+    .btn-action.btn-warning:hover {
+      background: linear-gradient(135deg, #ff9800, #ffc107);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-action.btn-danger {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+    }
+
+    .btn-action.btn-danger:hover {
+      background: linear-gradient(135deg, #c82333, #dc3545);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+    }
+
+    /* Stats Badge */
+    .stats-badge {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-top: 1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
       .hero {
-        padding: 1.5rem 1rem;
+        padding: 2rem 1rem;
       }
 
-      .hero h4 {
-        font-size: 1.2rem !important;
+      .hero h1 {
+        font-size: 1.8rem !important;
+      }
+
+      .hero p {
+        font-size: 0.95rem;
+      }
+
+      .icon-circle {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+
+      .btn-improved {
+        padding: 12px 25px;
+        font-size: 14px;
+        width: 100%;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .search-container {
+        max-width: 100%;
+      }
+
+      .table-container {
+        padding: 1rem;
+      }
+
+      .scroll-table-wrapper {
+        max-height: 400px;
+      }
+
+      .table {
+        font-size: 0.85rem;
+      }
+
+      .table thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .table tbody td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .btn-action {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        margin: 2px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 1.5rem !important;
       }
 
       .hero p {
         font-size: 0.9rem;
       }
 
-      .btn-improved {
-        padding: 12px 20px;
-        font-size: 16px;
+      .card-modern {
+        padding: 1rem;
+      }
+
+      .table-title {
+        font-size: 1.1rem;
+      }
+
+      .btn-action {
+        display: block;
         width: 100%;
-      }
-
-      .search-bar {
-        max-width: 100%;
-      }
-
-      h2.mb-3 {
-        font-size: 1.4rem !important;
-      }
-
-      .scroll-table-wrapper {
-        max-height: 300px;
-      }
-
-      .table {
-        font-size: 0.8rem;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .hero h4 {
-        font-size: 1.1rem !important;
-      }
-
-      .hero p {
-        font-size: 0.85rem;
-      }
-
-      .btn-improved {
-        padding: 10px 15px;
-        font-size: 14px;
-      }
-
-      h2.mb-3 {
-        font-size: 1.2rem !important;
+        margin-bottom: 5px;
       }
     }
   </style>
@@ -168,79 +415,157 @@
     </div>
   </nav>
 
-  <div class="container mt-5">
+  <div class="container mt-4">
     <!-- Hero Section -->
     <div class="hero">
-      <h4 class="alert-heading">Donation History</h4>
-      <p>This page displays all the donations recorded in the system. Review the details in the table below.</p>
+      <div class="hero-content">
+        <div class="icon-circle">
+          <i class="bi bi-clock-history"></i>
+        </div>
+        <h1><i class="bi bi-journal-text"></i> Donation History</h1>
+        <p>Complete record of all donations registered in the system</p>
+        <span class="stats-badge" id="totalRecords">
+          <i class="bi bi-database"></i> <span id="recordCount">0</span> Total Records
+        </span>
+      </div>
     </div>
 
-    <div class="d-flex justify-content-center mb-4">
-      <a href="/generate-pdf" class="btn btn-improved">Generate All Donations PDF</a>
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="/" class="btn btn-improved">
+        <i class="bi bi-plus-circle"></i> Add New Donation
+      </a>
+      <a href="/generate-pdf" class="btn btn-improved">
+        <i class="bi bi-file-earmark-pdf"></i> Generate PDF Report
+      </a>
     </div>
 
     <!-- Search Bar -->
-    <div class="search-bar mb-3">
-      <input type="text" id="searchInput" class="form-control" placeholder="Search donations...">
+    <div class="card-modern">
+      <div class="search-container">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by donor, department, amount, or date...">
+      </div>
     </div>
 
     <!-- Donation List Table -->
-    <h2 class="mb-3">Donation List</h2>
-    <div class="scroll-table-wrapper mb-5">
-      <table class="table table-bordered mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th>Donor Name</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Donation Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="donationHistoryTableBody">
-          <!-- Rows will be dynamically added -->
-        </tbody>
-      </table>
+    <div class="table-container">
+      <div class="table-title">
+        <i class="bi bi-table"></i>
+        <h2 class="mb-0">Complete Donation Records</h2>
+      </div>
+      
+      <div class="scroll-table-wrapper">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th><i class="bi bi-hash"></i> #</th>
+              <th><i class="bi bi-person"></i> Donor Name</th>
+              <th><i class="bi bi-building"></i> Department</th>
+              <th><i class="bi bi-currency-dollar"></i> Amount</th>
+              <th><i class="bi bi-calendar-event"></i> Date</th>
+              <th><i class="bi bi-gear"></i> Actions</th>
+            </tr>
+          </thead>
+          <tbody id="donationHistoryTableBody">
+            <!-- Rows will be dynamically added -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <i class="bi bi-inbox"></i>
+        <h4>No Donations Found</h4>
+        <p>Start by adding your first donation or adjust your search criteria.</p>
+      </div>
     </div>
   </div>
 
   <script>
+    let allDonations = [];
+
     fetch('/api/donaciones')
       .then(response => response.json())
       .then(data => {
-        const tbody = document.getElementById('donationHistoryTableBody');
-        data.forEach(donation => {
-          const row = document.createElement('tr');
-          const fecha = new Date(donation.FechaDonacion);
-          const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit' 
-          });
-          
-          row.innerHTML = `
-            <td>${donation.NombrePersona}</td>
-            <td>${donation.Descripcion}</td>
-            <td>$${donation.Monto.toFixed(2)}</td>
-            <td>${fechaFormateada}</td>
-            <td>
-              <a href="/editdeclaration/${donation._id}" class="btn btn-sm btn-warning">Edit</a>
-              <a href="/delete-donation/${donation._id}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this donation?')">Delete</a>
-            </td>
-          `;
-          tbody.appendChild(row);
-        });
+        allDonations = data;
+        displayDonations(data);
+        updateRecordCount(data.length);
       })
-      .catch(error => console.error('Error:', error));
-
-    // Filtro de búsqueda
-    document.getElementById('searchInput').addEventListener('keyup', function () {
-      const filter = this.value.toLowerCase();
-      const rows = document.querySelectorAll('#donationHistoryTableBody tr');
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+      .catch(error => {
+        console.error('Error:', error);
+        showEmptyState();
       });
+
+    function displayDonations(donations) {
+      const tbody = document.getElementById('donationHistoryTableBody');
+      const emptyState = document.getElementById('emptyState');
+      tbody.innerHTML = '';
+
+      if (donations.length === 0) {
+        showEmptyState();
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      donations.forEach((donation, index) => {
+        const row = document.createElement('tr');
+        const fecha = new Date(donation.FechaDonacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit' 
+        });
+        
+        row.innerHTML = `
+          <td><strong>${index + 1}</strong></td>
+          <td><i class="bi bi-person-circle"></i> ${donation.NombrePersona}</td>
+          <td><span class="badge bg-success">${donation.Descripcion}</span></td>
+          <td><strong>$${donation.Monto.toFixed(2)}</strong></td>
+          <td><i class="bi bi-calendar3"></i> ${fechaFormateada}</td>
+          <td>
+            <a href="/editdeclaration/${donation._id}" class="btn btn-action btn-warning">
+              <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a href="/delete-donation/${donation._id}" class="btn btn-action btn-danger" onclick="return confirm('⚠️ Are you sure you want to delete this donation? This action cannot be undone.')">
+              <i class="bi bi-trash"></i> Delete
+            </a>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function showEmptyState() {
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('donationHistoryTableBody').innerHTML = '';
+    }
+
+    function updateRecordCount(count) {
+      document.getElementById('recordCount').textContent = count;
+    }
+
+    // Búsqueda mejorada con debounce
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const filter = this.value.toLowerCase();
+        const filtered = allDonations.filter(donation => {
+          const donorName = donation.NombrePersona.toLowerCase();
+          const description = donation.Descripcion.toLowerCase();
+          const amount = donation.Monto.toString();
+          const fecha = new Date(donation.FechaDonacion).toLocaleDateString('es-ES');
+          
+          return donorName.includes(filter) || 
+                 description.includes(filter) || 
+                 amount.includes(filter) || 
+                 fecha.includes(filter);
+        });
+        
+        displayDonations(filtered);
+        updateRecordCount(filtered.length);
+      }, 300);
     });
   </script>
 
