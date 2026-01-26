@@ -284,7 +284,7 @@ app.get('/generate-summary', async (req, res) => {
 
   doc.text(`${donor.NombrePersona}\nPerry, IA 50220\n\n\n`);
   doc.text(`Dear ${donor.NombrePersona},\n\n`);
-  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from 2025-01-01 to ${new Date().toLocaleDateString()} was $_${totalDonations[0].total.toFixed(2)}.____________\n\n`);
+  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from 01-01-2025 to 12-01-2025 was $_${totalDonations[0].total.toFixed(2)}.____________\n\n`);
   doc.text('This total includes checks and cash for Pledge, Tithe and offering gifts.\n\n');
   doc.text('Should you have any questions regarding your contributions, please contact me at (515) 210-8767.\n\n\n\n');
   doc.text('Sincerely,\n\n\n\nDelfina Zepeda\nContributions Secretary\n');
@@ -452,7 +452,7 @@ app.post('/generate-declaration-pdf', async (req, res) => {
 
   doc.text(`${NombrePersona}\nPerry, IA 50220\n\n\n`);
   doc.text(`Dear ${NombrePersona},\n\n`);
-  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from 2025-01-01 to ${fecha} was $_${total}.____________\n\n`);
+  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from 01-01-2025 to 12-01-2025 was $_${total}.____________\n\n`);
   doc.text(`Description: ${descripcion}\n`);
   doc.text(`Amount: $${monto}\n\n`);
   doc.text('This total includes checks and cash for Pledge, Tithe, and offering gifts.\n\n');
