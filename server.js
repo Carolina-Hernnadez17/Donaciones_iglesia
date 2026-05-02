@@ -10,13 +10,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Conectar a MongoDB Atlas
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1);
-  });
+async function connectToMongo() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 15000,
+    });
+    console.log('✅ Connected to MongoDB Atlas (SRV)');
+  } catch (err) {
+    const isDnsSrvError =
+      err && (err.message.includes('querySrv') || err.message.includes('ENOTFOUND') || err.message.includes('ECONNREFUSED'));
+
+    if (isDnsSrvError && process.env.MONGO_URI_FALLBACK) {
+      console.warn('⚠️ SRV DNS lookup failed. Trying fallback MongoDB URI...');
+
+      await mongoose.connect(process.env.MONGO_URI_FALLBACK, {
+        serverSelectionTimeoutMS: 15000,
+      });
+      console.log('✅ Connected to MongoDB Atlas (fallback URI)');
+      return;
+    }
+
+    throw err;
+  }
+}
 
 app.use(cors());
 app.use(express.json());
@@ -466,7 +482,13 @@ app.post('/generate-declaration-pdf', async (req, res) => {
 
 // Ruta para registrar donaciones
 app.post('/donations', async (req, res) => {
-  const { NombrePersona, Descripcion, Monto, FechaDonacion } = req.body;
+  const { NombrePersona, Descripcion, DescripcionManual, Monto, FechaDonacion } = req.body;
+
+  const descripciones = Array.isArray(Descripcion) ? Descripcion : [Descripcion];
+  const descripcionesManual = Array.isArray(DescripcionManual)
+    ? DescripcionManual
+    : [DescripcionManual || ''];
+  const montos = Array.isArray(Monto) ? Monto : [Monto];
   
   // Crear fecha ajustando por zona horaria local
   const fechaIngresada = new Date(FechaDonacion + 'T12:00:00');
@@ -475,16 +497,32 @@ app.post('/donations', async (req, res) => {
     return res.status(400).send("Fecha de donación no válida.");
   }
 
-  if (Descripcion.length !== Monto.length) {
+  if (descripciones.length !== montos.length) {
     return res.status(400).send("Descripción y Monto deben tener la misma cantidad de elementos.");
   }
 
-  const donations = Descripcion.map((desc, index) => ({
-    NombrePersona,
-    Descripcion: desc,
-    Monto: Monto[index],
-    FechaDonacion: fechaIngresada,
-  }));
+  const donations = descripciones.map((desc, index) => {
+    const descripcionFinal = desc === '__manual__'
+      ? (descripcionesManual[index] || '').trim()
+      : String(desc || '').trim();
+
+    const montoFinal = parseFloat(montos[index]);
+
+    if (!descripcionFinal) {
+      throw new Error('Debe ingresar un nombre de departamento cuando selecciona "Other".');
+    }
+
+    if (Number.isNaN(montoFinal) || montoFinal < 0) {
+      throw new Error('Monto inválido.');
+    }
+
+    return {
+      NombrePersona,
+      Descripcion: descripcionFinal,
+      Monto: montoFinal,
+      FechaDonacion: fechaIngresada,
+    };
+  });
 
   try {
     await Donation.insertMany(donations);
@@ -506,6 +544,13 @@ app.get('/api/donaciones', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+connectToMongo()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error.message);
+    process.exit(1);
+  });

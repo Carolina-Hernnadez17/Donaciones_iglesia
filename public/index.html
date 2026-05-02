@@ -180,18 +180,27 @@
             <div class="row g-2 donation-entry mb-3">
               <div class="col-md-6">
                 <label class="form-label">Department</label>
-                <select class="form-control" name="Descripcion[]" required>
+                <select class="form-control department-select" name="Descripcion[]" required onchange="toggleManualDepartment(this)">
                   <option value="">Select Department</option>
                   <option value="BGMC">BGMC</option>
                   <option value="Misiones">Misiones</option>
                   <option value="Diezmo">Diezmo</option>
+                  <option value="Pledge">Pledge</option>
                   <option value="Speed The Light">Speed The Light</option>
                   <option value="Reserve">Reserve</option>
                   <option value="Pro Templo">Pro Templo</option>
                   <option value="Sunday Offering">Sunday Offering</option>
                   <option value="Wednesday Offering">Wednesday Offering</option>
                   <option value="Friday Offering">Friday Offering</option>
+                  <option value="__manual__">Other (write manually)</option>
                 </select>
+                <input
+                  type="text"
+                  class="form-control mt-2 manual-department"
+                  name="DescripcionManual[]"
+                  placeholder="Write department name"
+                  style="display: none;"
+                >
               </div>
               <div class="col-md-6">
                 <label class="form-label">Amount</label>
@@ -248,24 +257,51 @@
 
   <!-- Scripts -->
   <script>
+    const DEPARTMENT_OPTIONS = `
+      <option value="">Select Department</option>
+      <option value="BGMC">BGMC</option>
+      <option value="Misiones">Misiones</option>
+      <option value="Diezmo">Diezmo</option>
+      <option value="Pledge">Pledge</option>
+      <option value="Speed The Light">Speed The Light</option>
+      <option value="Reserve">Reserve</option>
+      <option value="Pro Templo">Pro Templo</option>
+      <option value="Sunday Offering">Sunday Offering</option>
+      <option value="Wednesday Offering">Wednesday Offering</option>
+      <option value="Friday Offering">Friday Offering</option>
+      <option value="__manual__">Other (write manually)</option>
+    `;
+
+    function toggleManualDepartment(selectElement) {
+      const container = selectElement.closest('.col-md-6');
+      const manualInput = container.querySelector('.manual-department');
+
+      if (selectElement.value === '__manual__') {
+        manualInput.style.display = 'block';
+        manualInput.required = true;
+      } else {
+        manualInput.style.display = 'none';
+        manualInput.required = false;
+        manualInput.value = '';
+      }
+    }
+
     function addDonationField() {
       const donationFields = document.getElementById('donationFields');
       const div = document.createElement('div');
       div.classList.add('row', 'g-2', 'donation-entry', 'mb-3');
       div.innerHTML = `
         <div class="col-md-6">
-          <select class="form-control" name="Descripcion[]" required>
-            <option value="">Select Department</option>
-            <option value="BGMC">BGMC</option>
-            <option value="Misiones">Misiones</option>
-            <option value="Diezmo">Diezmo</option>
-            <option value="Speed The Light">Speed The Light</option>
-            <option value="Reserve">Reserve</option>
-            <option value="Pro Templo">Pro Templo</option>
-            <option value="Sunday Offering">Sunday Offering</option>
-            <option value="Wednesday Offering">Wednesday Offering</option>
-            <option value="Friday Offering">Friday Offering</option>
+          <select class="form-control department-select" name="Descripcion[]" required onchange="toggleManualDepartment(this)">
+            ${DEPARTMENT_OPTIONS}
           </select>
+          <input
+            type="text"
+            class="form-control mt-2 manual-department"
+            name="DescripcionManual[]"
+            placeholder="Write department name"
+            style="display: none;"
+          >
         </div>
         <div class="col-md-6">
           <input type="number" step="0.01" min="0" class="form-control" name="Monto[]" placeholder="Amount" required>

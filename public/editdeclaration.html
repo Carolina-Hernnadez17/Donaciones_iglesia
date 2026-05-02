@@ -116,18 +116,27 @@
               </div>
               <div class="mb-3">
                 <label for="descripcion" class="form-label">Description:</label>
-                <select class="form-control" id="descripcion" name="descripcion" required>
+                <select class="form-control" id="descripcion" name="descripcion" required onchange="toggleEditManualDepartment()">
                   <option value="">Select Department</option>
                   <option value="BGMC">BGMC</option>
                   <option value="Misiones">Misiones</option>
                   <option value="Diezmo">Diezmo</option>
+                  <option value="Pledge">Pledge</option>
                   <option value="Speed The Light">Speed The Light</option>
                   <option value="Reserve">Reserve</option>
                   <option value="Pro Templo">Pro Templo</option>
                   <option value="Sunday Offering">Sunday Offering</option>
                   <option value="Wednesday Offering">Wednesday Offering</option>
                   <option value="Friday Offering">Friday Offering</option>
+                  <option value="__manual__">Other (write manually)</option>
                 </select>
+                <input
+                  type="text"
+                  class="form-control mt-2"
+                  id="descripcionManual"
+                  placeholder="Write department name"
+                  style="display: none;"
+                >
               </div>
               <div class="mb-3">
                 <label for="monto" class="form-label">Donation Amount:</label>
@@ -147,6 +156,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
   <script>
+    function toggleEditManualDepartment() {
+      const select = document.getElementById('descripcion');
+      const manualInput = document.getElementById('descripcionManual');
+
+      if (select.value === '__manual__') {
+        manualInput.style.display = 'block';
+        manualInput.required = true;
+      } else {
+        manualInput.style.display = 'none';
+        manualInput.required = false;
+        manualInput.value = '';
+      }
+    }
+
     // Obtener el ID de la donación desde la URL
     const donationId = window.location.pathname.split('/').pop();
 
@@ -159,7 +182,21 @@
           document.getElementById('donationId').value = data.donation._id;
           document.getElementById('nombreDonante').value = data.donation.NombrePersona;
           document.getElementById('fecha').value = new Date(data.donation.FechaDonacion).toISOString().split('T')[0];
-          document.getElementById('descripcion').value = data.donation.Descripcion;
+          const selectDescripcion = document.getElementById('descripcion');
+          const manualInput = document.getElementById('descripcionManual');
+          const optionExists = Array.from(selectDescripcion.options).some(
+            option => option.value === data.donation.Descripcion
+          );
+
+          if (optionExists) {
+            selectDescripcion.value = data.donation.Descripcion;
+            toggleEditManualDepartment();
+          } else {
+            selectDescripcion.value = '__manual__';
+            toggleEditManualDepartment();
+            manualInput.value = data.donation.Descripcion;
+          }
+
           document.getElementById('monto').value = data.donation.Monto;
         }
       })
@@ -176,9 +213,16 @@
         donationId: document.getElementById('donationId').value,
         NombrePersona: document.getElementById('nombreDonante').value,
         fecha: document.getElementById('fecha').value,
-        descripcion: document.getElementById('descripcion').value,
+        descripcion: document.getElementById('descripcion').value === '__manual__'
+          ? document.getElementById('descripcionManual').value.trim()
+          : document.getElementById('descripcion').value,
         monto: document.getElementById('monto').value
       };
+
+      if (!formData.descripcion) {
+        showMessage('Please write the department name.', 'danger');
+        return;
+      }
 
       try {
         const response = await fetch('/edit-donation', {
