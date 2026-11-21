@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Summary - Fuente de Vida</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+
+    .container {
+      max-width: 1000px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 15px 15px 0 0;
+      padding: 1.5rem;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 10px;
+      border: 2px solid #e9ecef;
+      padding: 0.75rem 1rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .summary-card h3 {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-card .amount {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .summary-card .meta {
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    .table {
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: #f8f9fa;
+    }
+
+    .table th {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+      font-weight: 600;
+      color: #667eea;
+      padding: 1rem;
+    }
+
+    .table td {
+      padding: 0.75rem 1rem;
+      vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .amount-badge {
+      background: #d4edda;
+      color: #155724;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .date-badge {
+      background: #d1ecf1;
+      color: #0c5460;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .dept-badge {
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .alert {
+      border-radius: 10px;
+      border: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner-border {
+      color: #667eea;
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6c757d;
+    }
+
+    .no-data i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .footer-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .footer-buttons button {
+      flex: 1;
+      max-width: 300px;
+    }
+
+    @media (max-width: 768px) {
+      .summary-card .amount {
+        font-size: 2rem;
+      }
+
+      .table {
+        font-size: 0.9rem;
+      }
+
+      .table th, .table td {
+        padding: 0.5rem;
+      }
+
+      .footer-buttons {
+        flex-direction: column;
+      }
+
+      .footer-buttons button {
+        max-width: 100%;
+      }
+    }
+
+    .total-row {
+      background: #f8f9fa;
+      font-weight: 600;
+      border-top: 2px solid #dee2e6;
+    }
+
+    .total-row td:last-child {
+      font-size: 1.3rem;
+      color: #28a745;
+    }
+
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-box i {
+      color: #667eea;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">
+        <i class="bi bi-heart-fill"></i> FUENTE DE VIDA
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/donationhistory">History</a></li>
+          <li class="nav-item"><a class="nav-link" href="/generatereports">Reports</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="bi bi-file-earmark-text"></i> Donor Summary Report</h2>
+      </div>
+      <div class="card-body p-4">
+        <!-- Form Section -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label for="donorNameInput" class="form-label fw-bold">Donor Name</label>
+            <input type="text" class="form-control" id="donorNameInput" placeholder="Enter donor name">
+          </div>
+          <div class="col-md-6">
+            <label for="yearSelect" class="form-label fw-bold">Year</label>
+            <select class="form-select" id="yearSelect">
+              <option value="">Select Year</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <i class="bi bi-info-circle"></i>
+          <strong>Tip:</strong> Enter the donor name and select a year to view all donations from January 1 to December 31 of that year.
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid gap-2 mb-4">
+          <button type="button" class="btn btn-primary btn-lg" id="searchBtn">
+            <i class="bi bi-search"></i> View Summary
+          </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loadingSpinner">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading donation data...</p>
+        </div>
+
+        <!-- Summary Card -->
+        <div id="summaryCard" style="display: none;">
+          <div class="summary-card">
+            <h3 id="donorNameDisplay"></h3>
+            <div class="amount" id="totalAmountDisplay">$0.00</div>
+            <div class="meta">
+              <span id="dateRangeDisplay"></span> | <span id="countDisplay">0 donations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div id="tableContainer" style="display: none;">
+          <h4 class="mb-3">Detailed Transactions</h4>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Department</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="donationsTableBody">
+              </tbody>
+              <tfoot>
+                <tr class="total-row">
+                  <td colspan="3" class="text-end">TOTAL</td>
+                  <td class="text-end"><span id="tableTotal">$0.00</span></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- No Data Message -->
+        <div id="noDataMessage" style="display: none;">
+          <div class="no-data">
+            <i class="bi bi-inbox"></i>
+            <h5>No donations found</h5>
+            <p>No donations found for this donor in the selected year. Please check the name and year.</p>
+          </div>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="footer-buttons" id="footerButtons" style="display: none;">
+          <button type="button" class="btn btn-secondary" id="clearBtn">
+            <i class="bi bi-arrow-counterclockwise"></i> Clear
+          </button>
+          <button type="button" class="btn btn-success" id="generatePdfBtn">
+            <i class="bi bi-filetype-pdf"></i> Generate PDF
+          </button>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorAlert" class="alert alert-danger alert-dismissible fade" role="alert" style="display: none;">
+          <strong><i class="bi bi-exclamation-circle"></i> Error!</strong>
+          <span id="errorMessage"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Load available years
+    async function loadAvailableYears() {
+      try {
+        const response = await fetch('/api/years');
+        const years = await response.json();
+        const yearSelect = document.getElementById('yearSelect');
+        
+        years.forEach(year => {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = year;
+          yearSelect.appendChild(option);
+        });
+
+        // Set default to current year if available
+        if (years.length > 0 && years[0] === new Date().getFullYear()) {
+          yearSelect.value = years[0];
+        }
+      } catch (error) {
+        console.error('Error loading years:', error);
+      }
+    }
+
+    // Load donor names (optional autocomplete)
+    async function loadDonorNames() {
+      try {
+        const response = await fetch('/api/donaciones?limit=1000');
+        const data = await response.json();
+        // Could implement autocomplete here
+      } catch (error) {
+        console.error('Error loading donors:', error);
+      }
+    }
+
+    // Search/View Summary
+    document.getElementById('searchBtn').addEventListener('click', async () => {
+      const donorName = document.getElementById('donorNameInput').value.trim();
+      const year = document.getElementById('yearSelect').value;
+
+      if (!donorName) {
+        showError('Please enter a donor name');
+        return;
+      }
+
+      if (!year) {
+        showError('Please select a year');
+        return;
+      }
+
+      await fetchDonorSummary(donorName, year);
+    });
+
+    // Fetch donor summary
+    async function fetchDonorSummary(donorName, year) {
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const summaryCard = document.getElementById('summaryCard');
+      const tableContainer = document.getElementById('tableContainer');
+      const noDataMessage = document.getElementById('noDataMessage');
+      const footerButtons = document.getElementById('footerButtons');
+
+      loadingSpinner.style.display = 'block';
+      summaryCard.style.display = 'none';
+      tableContainer.style.display = 'none';
+      noDataMessage.style.display = 'none';
+      footerButtons.style.display = 'none';
+
+      try {
+        const response = await fetch(
+          `/api/donor-summary-preview?nombreDonante=${encodeURIComponent(donorName)}&year=${year}`
+        );
+        const data = await response.json();
+
+        if (!data.donations || data.donations.length === 0) {
+          noDataMessage.style.display = 'block';
+          loadingSpinner.style.display = 'none';
+          return;
+        }
+
+        // Update summary card
+        document.getElementById('donorNameDisplay').textContent = data.donorName;
+        document.getElementById('totalAmountDisplay').textContent = `$${data.total.toFixed(2)}`;
+        document.getElementById('dateRangeDisplay').textContent = 
+          `${data.startDate} to ${data.endDate}`;
+        document.getElementById('countDisplay').textContent = 
+          `${data.count} donation${data.count !== 1 ? 's' : ''}`;
+
+        // Populate table
+        const tbody = document.getElementById('donationsTableBody');
+        tbody.innerHTML = '';
+        
+        data.donations.forEach((donation, index) => {
+          const date = new Date(donation.FechaDonacion);
+          const row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td><span class="date-badge">${date.toLocaleDateString('es-ES')}</span></td>
+              <td><span class="dept-badge">${donation.Descripcion}</span></td>
+              <td class="text-end"><span class="amount-badge">$${donation.Monto.toFixed(2)}</span></td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+
+        document.getElementById('tableTotal').textContent = `$${data.total.toFixed(2)}`;
+
+        // Show elements
+        loadingSpinner.style.display = 'none';
+        summaryCard.style.display = 'block';
+        tableContainer.style.display = 'block';
+        footerButtons.style.display = 'flex';
+
+        // Store data for PDF generation
+        window.donorSummaryData = {
+          donorName: data.donorName,
+          year: year,
+          total: data.total
+        };
+      } catch (error) {
+        loadingSpinner.style.display = 'none';
+        showError(`Error: ${error.message}`);
+      }
+    }
+
+    // Generate PDF
+    document.getElementById('generatePdfBtn').addEventListener('click', () => {
+      if (!window.donorSummaryData) return;
+
+      const { donorName, year, total } = window.donorSummaryData;
+      window.location.href = 
+        `/generate-summary?nombreDonante=${encodeURIComponent(donorName)}&year=${year}`;
+    });
+
+    // Clear form
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('donorNameInput').value = '';
+      document.getElementById('yearSelect').value = '';
+      document.getElementById('summaryCard').style.display = 'none';
+      document.getElementById('tableContainer').style.display = 'none';
+      document.getElementById('footerButtons').style.display = 'none';
+      document.getElementById('noDataMessage').style.display = 'none';
+      document.getElementById('errorAlert').style.display = 'none';
+    });
+
+    // Show error
+    function showError(message) {
+      const errorAlert = document.getElementById('errorAlert');
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = message;
+      errorAlert.style.display = 'block';
+      setTimeout(() => {
+        errorAlert.style.display = 'none';
+      }, 5000);
+    }
+
+    // Allow Enter key to search
+    document.getElementById('donorNameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('searchBtn').click();
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAvailableYears();
+      loadDonorNames();
+    });
+  </script>
+</body>
+</html>

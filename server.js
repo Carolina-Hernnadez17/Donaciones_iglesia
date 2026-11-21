@@ -58,6 +58,10 @@ app.get('/generatereports', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'generatereports.html'));
 });
 
+app.get('/donor-summary', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'donor-summary.html'));
+});
+
 app.get('/reports', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'reports.html'));
 });
@@ -272,7 +276,7 @@ app.get('/edit-declaration/:nombrePersona', async (req, res) => {
 // Ruta: Generar PDF resumen por nombre de donante
 app.get('/generate-summary', async (req, res) => {
   const donorName = req.query.nombreDonante;
-  const year = req.query.year || new Date().getFullYear();
+  const year = parseInt(req.query.year) || new Date().getFullYear();
 
   if (!donorName) {
     return res.status(400).send('Donor name is required');
@@ -284,9 +288,9 @@ app.get('/generate-summary', async (req, res) => {
     return res.status(404).send('Donor not found');
   }
 
-  // Crear rango de fechas para el año seleccionado
-  const startDate = new Date(`${year}-01-01`);
-  const endDate = new Date(`${year}-12-31T23:59:59`);
+  // Crear rango de fechas para el año seleccionado (00:00:00 - 23:59:59)
+  const startDate = new Date(year, 0, 1, 0, 0, 0, 0); // Jan 1 00:00:00
+  const endDate = new Date(year, 11, 31, 23, 59, 59, 999); // Dec 31 23:59:59
 
   const totalDonations = await Donation.aggregate([
     { 
@@ -318,6 +322,44 @@ app.get('/generate-summary', async (req, res) => {
   doc.text('Sincerely,\n\n\n\nDelfina Zepeda\nContributions Secretary\n');
 
   doc.end();
+});
+
+// Ruta: Preview de donaciones del donante para un año específico
+app.get('/api/donor-summary-preview', async (req, res) => {
+  try {
+    const donorName = req.query.nombreDonante;
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+
+    if (!donorName) {
+      return res.status(400).json({ error: 'Donor name is required' });
+    }
+
+    // Crear rango de fechas para el año seleccionado
+    const startDate = new Date(year, 0, 1, 0, 0, 0, 0);
+    const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+
+    // Obtener todas las donaciones del donante en el año
+    const donations = await Donation.find({
+      NombrePersona: donorName,
+      FechaDonacion: { $gte: startDate, $lte: endDate }
+    }).sort({ FechaDonacion: -1 });
+
+    // Calcular el total
+    const total = donations.reduce((sum, d) => sum + d.Monto, 0);
+
+    res.json({
+      donorName,
+      year,
+      startDate: startDate.toLocaleDateString(),
+      endDate: endDate.toLocaleDateString(),
+      donations: donations,
+      total: total,
+      count: donations.length
+    });
+  } catch (error) {
+    console.error('Error fetching donor summary preview:', error);
+    res.status(500).json({ error: 'Failed to fetch donor summary preview' });
+  }
 });
 
 // Ruta: Generar reporte por departamento y rango de fechas

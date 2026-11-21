@@ -342,19 +342,42 @@
             Generate Donor Summary
           </div>
           <div class="card-body">
-            <form action="/generate-summary" method="get">
+            <div id="donorFormSection">
               <div class="mb-3">
                 <label for="nombreDonante" class="form-label">Donor Name:</label>
-                <input type="text" class="form-control" id="nombreDonante" name="nombreDonante" placeholder="Enter donor name" required>
+                <input type="text" class="form-control" id="nombreDonante" placeholder="Enter donor name">
               </div>
               <div class="mb-3">
                 <label for="yearFilter" class="form-label">Year:</label>
-                <select class="form-control" id="yearFilter" name="year" required>
+                <select class="form-control" id="yearFilter">
                   <option value="">Select Year</option>
                 </select>
               </div>
-              <button type="submit" class="btn btn-improved w-100">Generate Declaration Letter</button>
-            </form>
+              <button type="button" class="btn btn-improved w-100" id="previewSummaryBtn">
+                <i class="bi bi-eye"></i> Preview & Generate
+              </button>
+            </div>
+
+            <!-- Preview Section (initially hidden) -->
+            <div id="donorPreviewSection" style="display: none;">
+              <div class="alert alert-info">
+                <strong>Summary Preview:</strong>
+                <div id="previewContent" style="margin-top: 1rem;">
+                  <div class="mb-2"><strong>Donor:</strong> <span id="previewDonorName"></span></div>
+                  <div class="mb-2"><strong>Year:</strong> <span id="previewYear"></span></div>
+                  <div class="mb-2"><strong>Total Donations:</strong> <span id="previewTotal" style="font-size: 1.3rem; color: #28a745; font-weight: bold;"></span></div>
+                  <div class="mb-2"><strong>Transactions:</strong> <span id="previewCount"></span></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 1rem;">
+                <button type="button" class="btn btn-secondary w-100" id="backToFormBtn">
+                  <i class="bi bi-arrow-left"></i> Back
+                </button>
+                <button type="button" class="btn btn-improved w-100" id="generatePdfBtn">
+                  <i class="bi bi-filetype-pdf"></i> Generate PDF
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -690,6 +713,72 @@
         currentPage = 1;
         displayDonations();
       }, 300); // Espera 300ms después de que el usuario deje de escribir
+    });
+
+    // Donor Summary Preview Functions
+    document.getElementById('previewSummaryBtn').addEventListener('click', async () => {
+      const donorName = document.getElementById('nombreDonante').value.trim();
+      const year = document.getElementById('yearFilter').value;
+
+      if (!donorName) {
+        alert('Please enter a donor name');
+        return;
+      }
+
+      if (!year) {
+        alert('Please select a year');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/donor-summary-preview?nombreDonante=${encodeURIComponent(donorName)}&year=${year}`
+        );
+        const data = await response.json();
+
+        if (!data.donations || data.donations.length === 0) {
+          alert(`No donations found for ${donorName} in year ${year}`);
+          return;
+        }
+
+        // Update preview
+        document.getElementById('previewDonorName').textContent = data.donorName;
+        document.getElementById('previewYear').textContent = year;
+        document.getElementById('previewTotal').textContent = `$${data.total.toFixed(2)}`;
+        document.getElementById('previewCount').textContent = `${data.count} transaction${data.count !== 1 ? 's' : ''}`;
+
+        // Store data for PDF generation
+        window.donorSummaryData = {
+          donorName: data.donorName,
+          year: year,
+          total: data.total
+        };
+
+        // Show preview, hide form
+        document.getElementById('donorFormSection').style.display = 'none';
+        document.getElementById('donorPreviewSection').style.display = 'block';
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    });
+
+    document.getElementById('backToFormBtn').addEventListener('click', () => {
+      document.getElementById('donorFormSection').style.display = 'block';
+      document.getElementById('donorPreviewSection').style.display = 'none';
+    });
+
+    document.getElementById('generatePdfBtn').addEventListener('click', () => {
+      if (!window.donorSummaryData) return;
+      const { donorName, year } = window.donorSummaryData;
+      window.location.href = 
+        `/generate-summary?nombreDonante=${encodeURIComponent(donorName)}&year=${year}`;
+    });
+
+    // Allow Enter key to trigger preview
+    document.getElementById('nombreDonante').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('previewSummaryBtn').click();
+      }
     });
   </script>
   
