@@ -1,0 +1,96 @@
+╔════════════════════════════════════════════════════════════════╗
+║  INSTRUCCIONES PARA HACER PUSH A GITHUB Y DESPLEGAR EN RENDER  ║
+╚════════════════════════════════════════════════════════════════╝
+
+PASO 1: HACER PUSH A GITHUB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Abre PowerShell en la carpeta del proyecto y ejecuta:
+
+cd "C:\Users\carol\OneDrive\Documentos\Tia Fina\Donaciones_iglesia"
+git push origin master
+
+Resultado esperado:
+  ✅ Done. Your branch is ahead of 'origin/master' by 4 commits.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASO 2: VERIFICAR PUSH EN GITHUB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ve a: https://github.com/Carolina-Hernnadez17/Donaciones_iglesia
+
+Verifica que veas:
+  ✅ Últimos commits: c853f9e, 53ec595, f0a29af, 1aaa0d1, 2ef475c
+  ✅ Archivos: COMPLETADO.md, README_IGLESIA.md, etc.
+  ✅ Branch: master (actualizado)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASO 3: DESPLEGAR EN RENDER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LEE: GUIA_DESPLIEGUE_RENDER.md
+
+O sigue estos pasos rápidos:
+
+1. Ve a https://dashboard.render.com
+2. Click "New +" → "Web Service"
+3. Conecta tu repositorio de GitHub
+4. Configura:
+   - Name: donaciones-iglesia
+   - Environment: Node
+   - Build Command: npm install
+   - Start Command: npm start
+   - Region: Miami (us-east-1)
+
+5. Click "Create Web Service"
+6. Espera a que diga "✅ Live"
+7. URL será: https://donaciones-iglesia.onrender.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERIFICACIÓN FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Después de desplegar, verifica:
+
+1. Abre: https://donaciones-iglesia.onrender.com
+2. Click "Registrar Donación"
+3. Prueba agregar una donación con departamento "Otro"
+4. Ve a "Reportes" y filtra por año
+5. Verifica que todo funciona igual que en http://localhost:3005
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NOTAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ El primer acceso después de inactividad (30 min) puede tardar 30 seg
+   (Esto es normal con el plan Free de Render)
+
+✅ Los logs de Render se ven en Dashboard → tu servicio → Logs
+
+✅ Para reiniciar el servidor en Render:
+   Dashboard → tu servicio → Manual Deploy → Deploy latest commit
+
+✅ La base de datos MongoDB sigue siendo la misma
+   (No necesitas cambiar nada en .env en Render, se configura en Dashboard)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+¿PROBLEMAS?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Error "MongoDB connection refused": Es normal, usa fallback URI
+✅ Página lenta al cargar: Espera 30 seg (plan Free Render)
+✅ Departamento no aparece: Recarga la página (F5)
+✅ Ver más soluciones: VERIFICACION_RAPIDA.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+¡Listo! Tu proyecto está completamente funcional y listo en producción.
+
+Cualquier pregunta, consulta los archivos .md que están en la carpeta.
+
+Éxito! 🚀
