@@ -529,14 +529,14 @@
   // Load departments
   async function loadDepartments() {
     try {
-      const response = await fetch('/api/departments-list');
+      const response = await fetch('/api/departments');
       const departments = await response.json();
       
       const select = document.getElementById('departamento');
       departments.forEach(dept => {
         const option = document.createElement('option');
-        option.value = dept.nombre;
-        option.textContent = dept.nombre;
+        option.value = dept;
+        option.textContent = dept;
         select.appendChild(option);
       });
     } catch (error) {
@@ -602,9 +602,88 @@
 
   // Apply filters
   document.getElementById('applyFiltersBtn').addEventListener('click', async () => {
-    // Add filter logic here
-    alert('⚠️ Funcionalidad de filtros en desarrollo');
+    const department = document.getElementById('departamento').value;
+    const year = document.getElementById('yearFilterDept').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    try {
+      let url = '/api/reports/by-department?';
+      
+      if (department) {
+        url += `department=${encodeURIComponent(department)}&`;
+      }
+
+      // If year is selected, generate date range for that year
+      if (year && !startDate && !endDate) {
+        const yearStart = new Date(year, 0, 1).toISOString().split('T')[0];
+        const yearEnd = new Date(year, 11, 31).toISOString().split('T')[0];
+        url += `startDate=${yearStart}&endDate=${yearEnd}`;
+      } else {
+        if (startDate) url += `startDate=${startDate}&`;
+        if (endDate) url += `endDate=${endDate}`;
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.donations || data.donations.length === 0) {
+        alert('⚠️ No se encontraron donaciones con los filtros seleccionados');
+        document.getElementById('resultsCard').style.display = 'none';
+        return;
+      }
+
+      // Clear table
+      const tableBody = document.getElementById('tableBody');
+      tableBody.innerHTML = '';
+
+      // Format currency helper
+      const formatCurrency = (num) => {
+        return new Intl.NumberFormat('es-ES', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(num);
+      };
+
+      // Populate table
+      let totalAmount = 0;
+      data.donations.forEach(donation => {
+        const row = document.createElement('tr');
+        const donationDate = new Date(donation.FechaDonacion).toLocaleDateString('es-ES');
+        
+        totalAmount += donation.Monto;
+        
+        row.innerHTML = `
+          <td>${donation.NombrePersona}</td>
+          <td>${donation.Descripcion}</td>
+          <td>${formatCurrency(donation.Monto)}</td>
+          <td>${donationDate}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Update total
+      document.getElementById('resultsTotal').textContent = formatCurrency(totalAmount);
+      document.getElementById('resultsCard').style.display = 'block';
+
+      // Store data for PDF download
+      window.reportsData = {
+        donations: data.donations,
+        total: totalAmount,
+        filters: { department, year, startDate, endDate }
+      };
+    } catch (error) {
+      alert(`❌ Error: ${error.message}`);
+      console.error('Error applying filters:', error);
+    }
   });
+
+  // Download PDF report
+  document.getElementById('downloadReportBtn')?.addEventListener('click', () => {
+    if (!window.reportsData) return;
+    alert('📄 Funcionalidad de descarga PDF en desarrollo');
+  });
+
 </script>
 
 </body>

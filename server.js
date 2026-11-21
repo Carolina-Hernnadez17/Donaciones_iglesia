@@ -615,6 +615,30 @@ app.get('/api/donaciones', async (req, res) => {
   }
 });
 
+// Ruta POST para crear una nueva donación
+app.post('/api/donaciones', async (req, res) => {
+  try {
+    const { NombrePersona, Descripcion, Monto, FechaDonacion, notas } = req.body;
+
+    if (!NombrePersona || !Descripcion || !Monto || !FechaDonacion) {
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    }
+
+    const donation = new Donation({
+      NombrePersona,
+      Descripcion,
+      Monto: parseFloat(Monto),
+      FechaDonacion: new Date(FechaDonacion)
+    });
+
+    await donation.save();
+    res.json({ success: true, donation });
+  } catch (error) {
+    console.error('Error al guardar donación:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 connectToMongo()
   .then(() => {
     app.listen(PORT, () => {

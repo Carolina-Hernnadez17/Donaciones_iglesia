@@ -395,14 +395,21 @@
             <label for="departamento" class="form-label">
               <i class="bi bi-tags"></i> Departamento
             </label>
-            <div class="input-group">
-              <select class="form-select" id="departamento" required>
-                <option value="">Seleccionar departamento...</option>
-              </select>
-              <button class="btn btn-outline-primary" type="button" id="addDepartmentBtn">
-                <i class="bi bi-plus"></i> Nuevo
-              </button>
-            </div>
+            <select class="form-select" id="departamento" required>
+              <option value="">Seleccionar departamento...</option>
+            </select>
+          </div>
+
+          <div class="mb-3" id="otherDepartmentDiv" style="display: none;">
+            <label for="otroDepartamento" class="form-label">
+              <i class="bi bi-plus-circle"></i> Nombre del Departamento (Otro)
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="otroDepartamento" 
+              placeholder="Ingrese el nombre del departamento"
+            >
           </div>
 
           <div class="mb-3">
@@ -486,20 +493,44 @@
   // Load departments
   async function loadDepartments() {
     try {
-      const response = await fetch('/api/departments-list');
+      const response = await fetch('/api/departments');
       const departments = await response.json();
       
       const select = document.getElementById('departamento');
+      
+      // Add existing departments
       departments.forEach(dept => {
         const option = document.createElement('option');
-        option.value = dept.nombre;
-        option.textContent = dept.nombre;
+        option.value = dept;
+        option.textContent = dept;
         select.appendChild(option);
       });
+      
+      // Add "Other" option
+      const otherOption = document.createElement('option');
+      otherOption.value = '__otro__';
+      otherOption.textContent = '+ Otro (Agregar nuevo)';
+      select.appendChild(otherOption);
     } catch (error) {
       console.error('Error loading departments:', error);
     }
   }
+
+  // Show/hide "other department" input
+  document.getElementById('departamento').addEventListener('change', (e) => {
+    const otherDeptDiv = document.getElementById('otherDepartmentDiv');
+    const otroInput = document.getElementById('otroDepartamento');
+    
+    if (e.target.value === '__otro__') {
+      otherDeptDiv.style.display = 'block';
+      otroInput.required = true;
+      otroInput.focus();
+    } else {
+      otherDeptDiv.style.display = 'none';
+      otroInput.required = false;
+      otroInput.value = '';
+    }
+  });
 
   loadDepartments();
 
@@ -507,11 +538,25 @@
   document.getElementById('donationForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const deptSelect = document.getElementById('departamento');
+    const otroDeptInput = document.getElementById('otroDepartamento');
+    
+    let departamento = deptSelect.value;
+    
+    // If "other" is selected, use the manual input
+    if (departamento === '__otro__') {
+      departamento = otroDeptInput.value.trim();
+      if (!departamento) {
+        alert('❌ Por favor ingrese el nombre del departamento');
+        return;
+      }
+    }
+    
     const donation = {
       NombrePersona: document.getElementById('nombre').value,
-      Descripcion: document.getElementById('departamento').value,
+      Descripcion: departamento,
       Monto: parseFloat(document.getElementById('monto').value),
-      FechaDonacion: new Date(document.getElementById('fecha').value),
+      FechaDonacion: document.getElementById('fecha').value,
       notas: document.getElementById('descripcion').value
     };
 
@@ -526,8 +571,10 @@
         alert('✅ Donación registrada correctamente');
         document.getElementById('donationForm').reset();
         document.getElementById('fecha').valueAsDate = new Date();
+        document.getElementById('otherDepartmentDiv').style.display = 'none';
       } else {
-        alert('❌ Error al registrar donación');
+        const errorText = await response.text();
+        alert('❌ Error al registrar donación: ' + errorText);
       }
     } catch (error) {
       console.error('Error:', error);
