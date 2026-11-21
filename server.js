@@ -272,6 +272,7 @@ app.get('/edit-declaration/:nombrePersona', async (req, res) => {
 // Ruta: Generar PDF resumen por nombre de donante
 app.get('/generate-summary', async (req, res) => {
   const donorName = req.query.nombreDonante;
+  const year = req.query.year || new Date().getFullYear();
 
   if (!donorName) {
     return res.status(400).send('Donor name is required');
@@ -283,14 +284,25 @@ app.get('/generate-summary', async (req, res) => {
     return res.status(404).send('Donor not found');
   }
 
+  // Crear rango de fechas para el año seleccionado
+  const startDate = new Date(`${year}-01-01`);
+  const endDate = new Date(`${year}-12-31T23:59:59`);
+
   const totalDonations = await Donation.aggregate([
-    { $match: { NombrePersona: donor.NombrePersona } },
+    { 
+      $match: { 
+        NombrePersona: donor.NombrePersona,
+        FechaDonacion: { $gte: startDate, $lte: endDate }
+      } 
+    },
     { $group: { _id: "$NombrePersona", total: { $sum: "$Monto" } } }
   ]);
 
+  const totalAmount = totalDonations.length > 0 ? totalDonations[0].total : 0;
+
   const doc = new PDFDocument({ size: 'letter' });
   res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'attachment; filename="Donor_Summary.pdf"');
+  res.setHeader('Content-Disposition', `attachment; filename="Donor_Summary_${year}.pdf"`);
 
   doc.pipe(res);
 
@@ -300,7 +312,7 @@ app.get('/generate-summary', async (req, res) => {
 
   doc.text(`${donor.NombrePersona}\nPerry, IA 50220\n\n\n`);
   doc.text(`Dear ${donor.NombrePersona},\n\n`);
-  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from 01-01-2025 to 12-01-2025 was $_${totalDonations[0].total.toFixed(2)}.____________\n\n`);
+  doc.text(`Thank you for your contributions to Fuente De Vida A/D church. Our records indicate that your total giving from January 1, ${year} to December 31, ${year} was $${totalAmount.toFixed(2)}.\n\n`);
   doc.text('This total includes checks and cash for Pledge, Tithe and offering gifts.\n\n');
   doc.text('Should you have any questions regarding your contributions, please contact me at (515) 210-8767.\n\n\n\n');
   doc.text('Sincerely,\n\n\n\nDelfina Zepeda\nContributions Secretary\n');
@@ -354,6 +366,23 @@ app.get('/api/departments', async (req, res) => {
   } catch (error) {
     console.error('Error fetching departments:', error);
     res.status(500).json({ error: 'Failed to fetch departments' });
+  }
+});
+
+// Ruta: Obtener años disponibles
+app.get('/api/years', async (req, res) => {
+  try {
+    const donations = await Donation.find({}, { FechaDonacion: 1 }).sort({ FechaDonacion: -1 });
+    const years = new Set();
+    donations.forEach(donation => {
+      const year = new Date(donation.FechaDonacion).getFullYear();
+      years.add(year);
+    });
+    const sortedYears = Array.from(years).sort((a, b) => b - a);
+    res.json(sortedYears);
+  } catch (error) {
+    console.error('Error fetching years:', error);
+    res.status(500).json({ error: 'Failed to fetch years' });
   }
 });
 

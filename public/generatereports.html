@@ -287,7 +287,7 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-4 mb-3">
+              <div class="col-md-3 mb-3">
                 <label for="departmentFilter" class="form-label">Department:</label>
                 <select class="form-control" id="departmentFilter">
                   <option value="all">All Departments</option>
@@ -302,11 +302,17 @@
                   <option value="Friday Offering">Friday Offering</option>
                 </select>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-3 mb-3">
+                <label for="yearFilterDept" class="form-label">Year:</label>
+                <select class="form-control" id="yearFilterDept">
+                  <option value="">All Years</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-3">
                 <label for="startDate" class="form-label">Start Date:</label>
                 <input type="date" class="form-control" id="startDate">
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-3 mb-3">
                 <label for="endDate" class="form-label">End Date:</label>
                 <input type="date" class="form-control" id="endDate">
               </div>
@@ -340,6 +346,12 @@
               <div class="mb-3">
                 <label for="nombreDonante" class="form-label">Donor Name:</label>
                 <input type="text" class="form-control" id="nombreDonante" name="nombreDonante" placeholder="Enter donor name" required>
+              </div>
+              <div class="mb-3">
+                <label for="yearFilter" class="form-label">Year:</label>
+                <select class="form-control" id="yearFilter" name="year" required>
+                  <option value="">Select Year</option>
+                </select>
               </div>
               <button type="submit" class="btn btn-improved w-100">Generate Declaration Letter</button>
             </form>
@@ -541,6 +553,7 @@
 
     function applyFilters() {
       const department = document.getElementById('departmentFilter').value;
+      const year = document.getElementById('yearFilterDept').value;
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
 
@@ -548,11 +561,17 @@
       if (department && department !== 'all') {
         queryParams.append('department', department);
       }
-      if (startDate) {
-        queryParams.append('startDate', startDate);
-      }
-      if (endDate) {
-        queryParams.append('endDate', endDate);
+      if (year) {
+        // Si se selecciona año, aplicar rango de enero a diciembre
+        queryParams.append('startDate', `${year}-01-01`);
+        queryParams.append('endDate', `${year}-12-31`);
+      } else {
+        if (startDate) {
+          queryParams.append('startDate', startDate);
+        }
+        if (endDate) {
+          queryParams.append('endDate', endDate);
+        }
       }
 
       fetch(`/api/reports/by-department?${queryParams.toString()}`)
@@ -604,6 +623,46 @@
 
     // Cargar donaciones al inicio
     loadDonations();
+
+    // Cargar años disponibles
+    async function loadAvailableYears() {
+      try {
+        const response = await fetch('/api/years');
+        const years = await response.json();
+        
+        // Cargar en selector de donante
+        const yearFilter = document.getElementById('yearFilter');
+        years.forEach(year => {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = year;
+          yearFilter.appendChild(option);
+        });
+        
+        // Cargar en selector de departamento
+        const yearFilterDept = document.getElementById('yearFilterDept');
+        years.forEach(year => {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = year;
+          yearFilterDept.appendChild(option);
+        });
+        
+        // Seleccionar el año actual por defecto
+        const currentYear = new Date().getFullYear();
+        if (years.includes(currentYear)) {
+          yearFilter.value = currentYear;
+          yearFilterDept.value = currentYear;
+        } else if (years.length > 0) {
+          yearFilter.value = years[0];
+          yearFilterDept.value = years[0];
+        }
+      } catch (error) {
+        console.error('Error loading years:', error);
+      }
+    }
+    
+    loadAvailableYears();
 
     // Búsqueda mejorada con debounce
     let searchTimeout;

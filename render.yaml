@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: donaciones-iglesia
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        scope: project
+      - key: MONGO_URI_FALLBACK
+        scope: project
+      - key: PORT
+        value: 3000
