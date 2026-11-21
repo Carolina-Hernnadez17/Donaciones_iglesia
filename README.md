@@ -25,20 +25,33 @@ Sistema completo de gestión de donaciones para iglesias con capacidad de genera
 - **Reporte por Departamento**: Filtra donaciones por departamento específico
 - **Reporte por Rango de Fechas**: Consulta donaciones entre dos fechas
 - **Reporte Combinado**: Departamento + Rango de fechas
-- **Resumen por Donante**: Genera carta de declaración personalizada
+- **Resumen por Donante**: Genera carta de declaración personalizada con año específico
+- **Preview de Donante**: Visualiza donaciones antes de generar PDF
 - **Exportación a PDF**: Todos los reportes son descargables en PDF
 
-### 4. **Mejoras en el Diseño**
+### 4. **Filtro por Año**
+- Selector dinámico de año en resumen de donante
+- Rango automático enero-diciembre del año seleccionado
+- Cantidad exacta del año en PDF generado
+- Detecta automáticamente años disponibles en base de datos
+
+### 5. **Vista Previa (Preview)**
+- Visualiza donaciones antes de descargar PDF
+- Muestra nombre del donante, año, total y cantidad de transacciones
+- Verifica que totales sean correctos antes de generar PDF
+- Interfaz dedicada en `/donor-summary` con tabla de transacciones
+
+### 6. **Mejoras en el Diseño**
 - Interfaz moderna y responsiva
 - Animaciones y transiciones suaves
 - Colores y gradientes atractivos
 - Tablas con scroll personalizado
 - Diseño optimizado para móviles
 
-### 5. **Formato de Fechas**
+### 7. **Formato de Fechas**
 - Formato español: DD/MM/YYYY
 - Fechas correctamente formateadas en todas las vistas
-- Año actualizado a 2025 en reportes
+- Rango de fechas automático: enero-diciembre del año seleccionado
 
 ## 🚀 Instalación
 
@@ -117,11 +130,18 @@ donaciones-app/
 5. Ver el resumen con total de donaciones y monto
 6. Hacer clic en "Download PDF Report" para descargar
 
-### Generar Carta de Declaración
+### Generar Carta de Declaración con Preview
 1. Ir a "Generate Reports"
 2. Ingresar el nombre del donante
-3. Hacer clic en "Generate Declaration Letter"
-4. Se descargará automáticamente el PDF
+3. Seleccionar el año deseado
+4. Hacer clic en "Preview & Generate"
+5. Aparecerá una ventana con:
+   - Nombre del donante
+   - Año seleccionado
+   - Total de donaciones en ese año
+   - Cantidad de transacciones
+6. Verificar que el total sea correcto
+7. Hacer clic en "Back" para buscar otro donante o "Generate PDF" para descargar
 
 ### Ver Historial
 1. Ir a "Donation History"
