@@ -1,70 +1,63 @@
-# Sistema de Donaciones - Iglesia Fuente de Vida
+# 🙏 Sistema de Gestión de Donaciones
+## Iglesia Fuente de Vida
 
-## 🎯 Descripción
-Sistema completo de gestión de donaciones para iglesias con capacidad de generar reportes por departamento, rango de fechas y donante.
+---
 
-## ✨ Características Principales
+## 📖 Descripción
 
-### 1. **Registro de Donaciones**
-- Formulario dinámico para agregar múltiples donaciones
-- Selector de departamentos predefinidos
-- Formato de fecha mejorado
-- Validación de datos
+Sistema integral y seguro para la gestión de donaciones eclesiales. Proporciona herramientas profesionales para registrar, organizar y generar reportes de contribuciones, facilitando la administración transparente de fondos parroquiales.
 
-### 2. **Departamentos Disponibles**
-- Misiones
-- Alabanza
-- Jóvenes
-- Niños
-- Construcción
-- Diezmos
-- Ofrendas
-- Otros
+**Características**: Registro de donaciones • Reportes por departamento • Cartas de declaración • Vista previa segura • Exportación a PDF
 
-### 3. **Reportes y Consultas**
-- **Reporte por Departamento**: Filtra donaciones por departamento específico
-- **Reporte por Rango de Fechas**: Consulta donaciones entre dos fechas
-- **Reporte Combinado**: Departamento + Rango de fechas
-- **Resumen por Donante**: Genera carta de declaración personalizada con año específico
-- **Preview de Donante**: Visualiza donaciones antes de generar PDF
-- **Exportación a PDF**: Todos los reportes son descargables en PDF
+---
 
-### 4. **Filtro por Año**
-- Selector dinámico de año en resumen de donante
-- Rango automático enero-diciembre del año seleccionado
-- Cantidad exacta del año en PDF generado
-- Detecta automáticamente años disponibles en base de datos
+## ✨ Funcionalidades Principales
 
-### 5. **Vista Previa (Preview)**
-- Visualiza donaciones antes de descargar PDF
-- Muestra nombre del donante, año, total y cantidad de transacciones
-- Verifica que totales sean correctos antes de generar PDF
-- Interfaz dedicada en `/donor-summary` con tabla de transacciones
+### 📝 **Registro de Donaciones**
+- Formulario intuitivo y fácil de usar
+- Selector dinámico de departamentos
+- Validación automática de datos
+- Soporte para múltiples donaciones por sesión
 
-### 6. **Mejoras en el Diseño**
-- Interfaz moderna y responsiva
-- Animaciones y transiciones suaves
-- Colores y gradientes atractivos
-- Tablas con scroll personalizado
-- Diseño optimizado para móviles
+### 📊 **Reportes Avanzados**
+- Filtrar por departamento específico
+- Buscar por rango de fechas personalizado
+- Generar por año calendario
+- Totales calculados automáticamente
 
-### 7. **Formato de Fechas**
-- Formato español: DD/MM/YYYY
-- Fechas correctamente formateadas en todas las vistas
-- Rango de fechas automático: enero-diciembre del año seleccionado
+### 📋 **Cartas de Declaración**
+- Generar certificados por donante
+- Período personalizable por año
+- Verificación previa antes de imprimir
+- Formato profesional en PDF
 
-## 🚀 Instalación
+### 👁️ **Sistema de Verificación**
+- Vista previa de donaciones antes de reportes
+- Validación de totales en tiempo real
+- Interfaz clara y transparente
+- Garantía de exactitud en números
+
+### 📱 **Diseño Responsivo**
+- Interfaz moderna y profesional
+- Compatible con todos los dispositivos
+- Fácil navegación
+- Accesibilidad mejorada
+
+---
+
+## 🚀 Requisitos e Instalación
 
 ### Requisitos Previos
-- Node.js (v14 o superior)
-- MongoDB Atlas (cuenta configurada)
-- npm o yarn
+- **Node.js** v14 o superior
+- **npm** o **yarn** (gestor de paquetes)
+- Conexión a Internet para base de datos
 
 ### Pasos de Instalación
 
 1. **Clonar el repositorio**
 ```bash
-cd donaciones-app
+git clone https://github.com/Carolina-Hernnadez17/Donaciones_iglesia.git
+cd Donaciones_iglesia
 ```
 
 2. **Instalar dependencias**
@@ -73,24 +66,235 @@ npm install
 ```
 
 3. **Configurar variables de entorno**
-El archivo `.env` ya está configurado con:
-```env
-MONGO_URI=mongodb+srv://socawah:DCS007PCMJstUoZu@cluster0.sfa9z.mongodb.net/donaciones_db?retryWrites=true&w=majority&appName=Cluster0
-PORT=3000
+```bash
+# Crear archivo .env (proporcionar al administrador)
+cp .env.example .env
+# Editar .env con credenciales proporcionadas
 ```
 
-4. **Iniciar el servidor**
+4. **Iniciar servidor**
 ```bash
+# Desarrollo (con auto-reload)
+npm run dev
+
+# Producción
 npm start
 ```
 
-Para desarrollo con auto-reload:
+5. **Acceder a la aplicación**
+```
+Abrir navegador: http://localhost:3005
+```
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
+donaciones-iglesia/
+├── 📁 models/
+│   └── Donation.js              # Esquema de base de datos
+│
+├── 📁 public/
+│   ├── 📁 css/
+│   │   └── styles.css           # Estilos personalizados
+│   ├── 📁 js/
+│   │   └── utils.js             # Funciones auxiliares
+│   │
+│   ├── index.html               # 🏠 Página principal
+│   ├── generatereports.html      # 📊 Generador de reportes
+│   ├── donationhistory.html      # 📜 Historial de donaciones
+│   ├── donor-summary.html        # 👤 Resumen de donante
+│   └── editdeclaration.html      # ✏️ Edición de donaciones
+│
+├── 📄 server.js                 # Servidor Express principal
+├── 📄 package.json              # Dependencias del proyecto
+├── 📄 .env                      # Variables de entorno (no compartir)
+├── 📄 .gitignore                # Archivos ignorados en Git
+└── 📄 README.md                 # Este archivo
+```
+
+---
+
+## 🎯 Guía de Uso
+
+### 1️⃣ Registrar una Donación
+
+```
+1. Ir a: Página Principal
+2. Completar formulario:
+   • Nombre del donante
+   • Departamento (desplegable)
+   • Monto en dólares
+   • Fecha de donación
+3. Hacer clic: "Registrar Donación"
+4. Confirmación: Mensaje de éxito
+```
+
+### 2️⃣ Ver Historial de Donaciones
+
+```
+1. Ir a: Historial de Donaciones
+2. Búsqueda: Nombre, monto o departamento
+3. Filtros: Aplicar criterios
+4. Resultado: Lista completa y ordenada
+```
+
+### 3️⃣ Generar Reporte por Departamento
+
+```
+1. Ir a: Generador de Reportes
+2. Seleccionar:
+   • Departamento
+   • Rango de fechas (opcional)
+3. Aplicar filtros
+4. Descargar: PDF con resumen
+```
+
+### 4️⃣ Generar Carta de Declaración
+
+```
+1. Ir a: Generador de Reportes
+2. Buscar: Nombre del donante
+3. Seleccionar: Año de consulta
+4. Vista previa: Verificar totales
+5. Generar: Descargar PDF certificado
+```
+
+---
+
+## 🔐 Seguridad y Confidencialidad
+
+### Protección de Datos
+✅ Credenciales **nunca** se exponen en código  
+✅ Variables de entorno protegidas  
+✅ Conexión encriptada a base de datos  
+✅ Validación de entrada en todos los campos  
+
+### Buenas Prácticas
+- No compartir archivo `.env`
+- No commit de credenciales a Git
+- Usar contraseñas seguras
+- Acceso restringido al servidor
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+| Componente | Tecnología |
+|-----------|------------|
+| Backend | Node.js + Express |
+| Database | MongoDB Atlas |
+| Frontend | HTML5 + CSS3 + JavaScript |
+| Estilos | Bootstrap 5.3.3 |
+| PDF | PDFKit |
+| Control de versión | Git |
+
+---
+
+## 📞 Soporte y Mantenimiento
+
+### Problemas Comunes
+
+**Error: "Cannot find module..."**
 ```bash
+# Solución:
+npm install
+```
+
+**Error: "Port already in use"**
+```bash
+# Cambiar puerto en .env
+PORT=3006
+```
+
+**La base de datos no conecta**
+- Verificar credenciales en `.env`
+- Confirmar conexión a Internet
+- Contactar al administrador del servidor
+
+### Contacto de Soporte
+Para asistencia técnica, contactar al equipo de TI de la iglesia.
+
+---
+
+## 📚 Documentación Adicional
+
+- **Departamentos Disponibles**: Misiones, Alabanza, Jóvenes, Niños, Construcción, Diezmos, Ofrendas, Otros
+- **Formatos de Fecha**: DD/MM/YYYY (ej: 15/11/2026)
+- **Moneda**: USD ($)
+- **Idioma**: Español
+
+---
+
+## 📋 Versión y Cambios
+
+**Versión Actual**: 2.1.0  
+**Última Actualización**: Noviembre 2026  
+**Estado**: Producción
+
+### Características Recientes
+- ✅ Vista previa de donaciones mejorada
+- ✅ Filtro por año calendárico
+- ✅ Totales verificables antes de imprimir
+- ✅ Diseño responsivo optimizado
+
+---
+
+## ⚖️ Licencia y Derechos
+
+© 2026 **Iglesia Fuente de Vida**  
+Todos los derechos reservados.
+
+Sistema desarrollado y mantenido para uso interno de la congregación.
+
+---
+
+## 🙏 Notas Importantes
+
+- Sistema diseñado únicamente para administración interna
+- Mantener confidencialidad de donantes
+- Usar con responsabilidad y transparencia
+- Reportes para verificación interna solamente
+
+**"Porque Dios ama al que da con alegría"** - 2 Corintios 9:7
+
+## 🚀 Instalación
+
+### Requisitos Previos
+- **Node.js** v14 o superior
+- **npm** o **yarn** (gestor de paquetes)
+- Conexión a Internet
+
+### Pasos de Instalación
+
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/Carolina-Hernnadez17/Donaciones_iglesia.git
+cd Donaciones_iglesia
+```
+
+2. **Instalar dependencias**
+```bash
+npm install
+```
+
+3. **Configurar variables de entorno**
+Contactar al administrador para obtener archivo `.env` con credenciales
+
+4. **Iniciar servidor**
+```bash
+# Desarrollo
 npm run dev
+
+# Producción
+npm start
 ```
 
 5. **Acceder a la aplicación**
-Abrir el navegador en: `http://localhost:3000`
+```
+http://localhost:3005
+```
 
 ## 📁 Estructura del Proyecto
 
